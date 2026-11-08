@@ -16,6 +16,15 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // F-Droid builds one APK per processor type with -Pabi=<abi>. Each gets versionCode*10 + n; the
+        // 64-bit builds get the higher codes so phones that run both pick them.
+        providers.gradleProperty("abi").orNull?.let { abi ->
+            val n = listOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").indexOf(abi)
+            require(n >= 0) { "Unknown abi '$abi'" }
+            versionCode = versionCode!! * 10 + n
+            ndk { abiFilters += abi }
+        }
     }
 
     val storeFile = providers.gradleProperty("TICKER_STORE_FILE").orNull

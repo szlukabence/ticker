@@ -1,12 +1,14 @@
-# Build recipe for F-Droid. Copy this file to metadata/io.github.szlukabence.ticker.yml in a fork of
-# https://gitlab.com/fdroid/fdroiddata and open a merge request (see README, "Publishing on F-Droid").
+# Template of the F-Droid recipe. The copy in fdroiddata has the real commit hash instead of
+# COMMIT_HASH and no comments.
 Categories:
-  - Money
+  - Unit Convertor
+  - Market & Price
+  - OCR
 License: GPL-3.0-or-later
 AuthorName: Bence Szluka
 SourceCode: https://github.com/szlukabence/ticker
 IssueTracker: https://github.com/szlukabence/ticker/issues
-Changelog: https://github.com/szlukabence/ticker/releases
+Changelog: https://github.com/szlukabence/ticker/tags
 
 AutoName: Ticker
 
@@ -15,13 +17,47 @@ Repo: https://github.com/szlukabence/ticker.git
 
 Builds:
   - versionName: 0.1.0
-    versionCode: 1
-    commit: v0.1.0
+    versionCode: 10
+    commit: COMMIT_HASH
     subdir: app
     gradle:
       - yes
+    gradleprops:
+      - abi=armeabi-v7a
+
+  - versionName: 0.1.0
+    versionCode: 11
+    commit: COMMIT_HASH
+    subdir: app
+    gradle:
+      - yes
+    gradleprops:
+      - abi=x86
+
+  - versionName: 0.1.0
+    versionCode: 12
+    commit: COMMIT_HASH
+    subdir: app
+    gradle:
+      - yes
+    gradleprops:
+      - abi=arm64-v8a
+
+  - versionName: 0.1.0
+    versionCode: 13
+    commit: COMMIT_HASH
+    subdir: app
+    gradle:
+      - yes
+    gradleprops:
+      - abi=x86_64
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
+VercodeOperation:
+  - 10*%c+0
+  - 10*%c+1
+  - 10*%c+2
+  - 10*%c+3
 CurrentVersion: 0.1.0
-CurrentVersionCode: 1
+CurrentVersionCode: 13
