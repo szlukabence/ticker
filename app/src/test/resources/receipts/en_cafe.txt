@@ -1,0 +1,13 @@
+THE BLUE CUP CAFE
+12 High Street, London
+VAT No. 123456789
+Table 4    07/11/2026 14:05
+Flat White               3.40
+Croissant                2.75
+Avocado Toast            8.50
+Orange Juice             3.20
+Subtotal                17.85
+VAT 20%                  2.98
+Total                   17.85
+Card                    17.85
+Thank you!

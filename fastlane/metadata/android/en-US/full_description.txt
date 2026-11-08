@@ -1,0 +1,30 @@
+Ticker is a free currency converter with no ads, no account and no tracking.
+
+<b>Convert</b>
+<ul>
+<li>A calculator-style list of your favourite currencies: type in one, see all the others.</li>
+<li>Over 300 fiat currencies and cryptocurrencies.</li>
+<li>Fresh rates every time you open the app, and the last rates stay available offline.</li>
+<li>Optional card fee, so you see roughly what your bank will charge.</li>
+</ul>
+
+<b>Charts</b>
+<ul>
+<li>Daily history for any pair, from one week up to the full ECB record for major currencies.</li>
+</ul>
+
+<b>Camera</b>
+<ul>
+<li>Point the camera at a price tag to see it converted live.</li>
+<li>Receipt mode reads every line of a receipt and converts the total.</li>
+<li>Text recognition runs on the phone. Photos are never stored or uploaded.</li>
+</ul>
+
+<b>Everywhere else</b>
+<ul>
+<li>Select a price in any app and choose "Convert" from the text menu.</li>
+<li>A home-screen widget with your favourite rates.</li>
+</ul>
+
+<b>Where the rates come from</b>
+Major currencies use the European Central Bank's daily reference rates (via frankfurter.dev). Other currencies and crypto come from the public-domain fawazahmed0 currency API. Rates are for information only, not the rate your bank or exchange will give you.

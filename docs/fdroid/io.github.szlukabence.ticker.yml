@@ -1,0 +1,27 @@
+# Build recipe for F-Droid. Copy this file to metadata/io.github.szlukabence.ticker.yml in a fork of
+# https://gitlab.com/fdroid/fdroiddata and open a merge request (see README, "Publishing on F-Droid").
+Categories:
+  - Money
+License: GPL-3.0-or-later
+AuthorName: Bence Szluka
+SourceCode: https://github.com/szlukabence/ticker
+IssueTracker: https://github.com/szlukabence/ticker/issues
+Changelog: https://github.com/szlukabence/ticker/releases
+
+AutoName: Ticker
+
+RepoType: git
+Repo: https://github.com/szlukabence/ticker.git
+
+Builds:
+  - versionName: 0.1.0
+    versionCode: 1
+    commit: v0.1.0
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 0.1.0
+CurrentVersionCode: 1
