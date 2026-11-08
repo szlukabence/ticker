@@ -2,7 +2,6 @@ Independent JPEG Group's JPEG software (libjpeg 9f), as bundled in Tesseract4And
 
 This software is based in part on the work of the Independent JPEG Group.
 
-LEGAL ISSUES        Copyright, lack of warranty, terms of distribution.
 LEGAL ISSUES
 ============
 
