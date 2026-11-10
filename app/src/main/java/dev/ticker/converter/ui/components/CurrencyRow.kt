@@ -61,7 +61,7 @@ fun CurrencyGlyph(c: Currency, size: Int = 38, active: Boolean = false) {
         Modifier
             .then(if (active) Modifier.glow(alpha = 0.35f, blur = 10.dp, corner = 9.dp) else Modifier)
             .size(size.dp)
-            .background(if (active) Neon.AccentWell else Color(0xFF141414), RoundedCornerShape((size * 0.3).dp)),
+            .background(if (active) Neon.AccentWell else Neon.Chip, RoundedCornerShape((size * 0.3).dp)),
         contentAlignment = Alignment.Center,
     ) {
         val color = when {

@@ -45,10 +45,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.ticker.converter.data.catalog.CurrencyCatalog
+import dev.ticker.converter.ui.components.FullScreenDialog
 import dev.ticker.converter.ui.components.CurrencyPicker
 import dev.ticker.converter.ui.components.NeonIconButton
 import dev.ticker.converter.ui.components.NeonPillButton
@@ -75,7 +74,7 @@ fun ReceiptScreen(
     val state by vm.state.collectAsStateWithLifecycle()
     var picking by remember { mutableStateOf<Picking?>(null) }
 
-    Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    FullScreenDialog(onDismissRequest = onClose) {
         CompositionLocalProvider(LocalContentColor provides TickerColors.Text) {
             Column(Modifier.fillMaxSize().dotGrid().safeDrawingPadding()) {
                 Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -194,7 +193,7 @@ private fun Content(state: ReceiptUiState, vm: ReceiptViewModel, onOpenConvert: 
                     color = TickerColors.Warning,
                 )
             }
-            Text("Tap to open in Convert", Modifier.padding(top = 4.dp), style = MaterialTheme.typography.labelSmall, color = Color(0xFF8FF5BF))
+            Text("Tap to open in Convert", Modifier.padding(top = 4.dp), style = MaterialTheme.typography.labelSmall, color = Neon.AccentSoft)
         }
     }
 }

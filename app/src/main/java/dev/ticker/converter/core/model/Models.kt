@@ -59,7 +59,20 @@ data class Settings(
     val feeOn: Boolean = false,
     /** Last Camera mode used, so the tab reopens where the person left it. */
     val cameraMode: CameraMode = CameraMode.PRICE,
+    /** Light or dark look; SYSTEM follows the phone's dark-mode setting. */
+    val theme: ThemeMode = ThemeMode.SYSTEM,
 )
+
+@Serializable
+enum class ThemeMode {
+    SYSTEM, LIGHT, DARK;
+
+    fun isDark(systemDark: Boolean): Boolean = when (this) {
+        SYSTEM -> systemDark
+        LIGHT -> false
+        DARK -> true
+    }
+}
 
 /** Camera tab: read one price live, or photograph a whole receipt. */
 @Serializable

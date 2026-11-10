@@ -30,11 +30,10 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Alignment
 import dev.ticker.converter.BuildConfig
+import dev.ticker.converter.ui.components.FullScreenDialog
 import dev.ticker.converter.ui.components.NeonIconButton
 import dev.ticker.converter.ui.components.NeonPillButton
 import dev.ticker.converter.ui.theme.Neon
@@ -50,7 +49,7 @@ fun AboutScreen(onClose: () -> Unit) {
     val uri = LocalUriHandler.current
     val open: (String) -> Unit = { url -> runCatching { uri.openUri(url) } }
 
-    Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    FullScreenDialog(onDismissRequest = onClose) {
         CompositionLocalProvider(LocalContentColor provides TickerColors.Text) {
             Column(Modifier.fillMaxSize().dotGrid().safeDrawingPadding()) {
                 val shown = reading

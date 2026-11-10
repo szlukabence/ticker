@@ -45,15 +45,15 @@ fun BottomBar(current: Tab, onSelect: (Tab) -> Unit) {
     ) {
         Row(
             Modifier
-                .background(Color(0xFF0D0D0D), DockShape)
-                .border(1.dp, Color(0xFF1F1F1F), DockShape)
+                .background(TickerColors.Surface, DockShape)
+                .border(1.dp, TickerColors.SurfaceBorder, DockShape)
                 .padding(6.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Tab.entries.forEach { tab ->
                 val on = tab == current
                 val bg by animateColorAsState(if (on) TickerColors.Accent else Color.Transparent, label = "dockBg")
-                val fg by animateColorAsState(if (on) Color.Black else TickerColors.Dim, label = "dockFg")
+                val fg by animateColorAsState(if (on) TickerColors.OnAccent else TickerColors.Dim, label = "dockFg")
                 Box(
                     Modifier
                         .then(if (on) Modifier.glow(alpha = 0.45f, blur = 14.dp, corner = 22.dp) else Modifier)

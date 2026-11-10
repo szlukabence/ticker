@@ -34,7 +34,7 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import dev.ticker.converter.MainActivity
 import dev.ticker.converter.TickerApp
-import dev.ticker.converter.ui.theme.TickerColors
+import dev.ticker.converter.ui.theme.DarkPalette
 import java.time.Instant
 import java.time.ZoneId
 
@@ -119,10 +119,11 @@ class TickerWidget : GlanceAppWidget() {
         val WIDE_SMALL = DpSize(180.dp, 50.dp)
         val WIDE_MEDIUM = DpSize(180.dp, 110.dp)
         val WIDE_TALL = DpSize(180.dp, 180.dp)
-        val ACCENT = ColorProvider(TickerColors.Accent)
-        val TEXT = ColorProvider(TickerColors.Text)
-        val DIM = ColorProvider(TickerColors.Dim)
-        val NEGATIVE = ColorProvider(TickerColors.Negative)
-        val WARNING = ColorProvider(TickerColors.Warning)
+        // The widget keeps the dark Neon look whatever the app theme is.
+        val ACCENT = ColorProvider(DarkPalette.accent)
+        val TEXT = ColorProvider(DarkPalette.text)
+        val DIM = ColorProvider(DarkPalette.dim)
+        val NEGATIVE = ColorProvider(DarkPalette.negative)
+        val WARNING = ColorProvider(DarkPalette.warning)
     }
 }

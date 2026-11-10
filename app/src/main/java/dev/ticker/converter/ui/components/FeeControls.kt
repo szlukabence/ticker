@@ -81,7 +81,7 @@ fun FeeChip(on: Boolean, bps: Int, onToggle: () -> Unit, onLongPress: () -> Unit
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun FeeSheet(bps: Int, onSet: (Int) -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Color(0xFF0D0D0D)) {
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = TickerColors.Surface) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text("CARD FEE", style = MaterialTheme.typography.labelSmall, color = TickerColors.Dim, letterSpacing = 1.5.sp)
             Text(

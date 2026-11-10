@@ -59,4 +59,21 @@ class SettingsCodecTest {
         assertEquals(null, s.cameraTo)
         assertEquals(true, s.initialized)
     }
+    @Test fun oldSettingsJsonFollowsSystemTheme() {
+        val s = SettingsCodec.decode("""{"favorites":["EUR","USD"]}""")
+        assertEquals(dev.ticker.converter.core.model.ThemeMode.SYSTEM, s.theme)
+        assertEquals(listOf("EUR", "USD"), s.favorites)
+    }
+
+    @Test fun themeRoundTrips() {
+        val s = SettingsCodec.decode(SettingsCodec.encode(dev.ticker.converter.core.model.Settings(theme = dev.ticker.converter.core.model.ThemeMode.LIGHT)))
+        assertEquals(dev.ticker.converter.core.model.ThemeMode.LIGHT, s.theme)
+    }
+
+    /** A theme value from a newer version must not wipe the person's favourites. */
+    @Test fun unknownThemeKeepsOtherSettings() {
+        val s = SettingsCodec.decode("""{"favorites":["EUR","USD"],"theme":"SEPIA"}""")
+        assertEquals(dev.ticker.converter.core.model.ThemeMode.SYSTEM, s.theme)
+        assertEquals(listOf("EUR", "USD"), s.favorites)
+    }
 }

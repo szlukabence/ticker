@@ -1,0 +1,1 @@
+New light theme. Ticker follows your phone's dark-mode setting, or pick Light or Dark with the new button on the Convert screen. The camera always stays dark.

@@ -10,6 +10,7 @@ import dev.ticker.converter.core.math.ExpressionEvaluator
 import dev.ticker.converter.core.model.Currency
 import dev.ticker.converter.core.model.CurrencyKind
 import dev.ticker.converter.core.model.Settings
+import dev.ticker.converter.core.model.ThemeMode
 import dev.ticker.converter.core.model.SyncStatus
 import dev.ticker.converter.data.catalog.CurrencyCatalog
 import dev.ticker.converter.data.local.SettingsRepository
@@ -40,6 +41,7 @@ data class ConvertUiState(
     val loaded: Boolean = false,
     val feeOn: Boolean = false,
     val feeBps: Int = 200,
+    val theme: ThemeMode = ThemeMode.SYSTEM,
 )
 
 class ConvertViewModel(
@@ -88,6 +90,8 @@ class ConvertViewModel(
     fun onToggleFee() = mutate { it.copy(feeOn = !it.feeOn) }
 
     fun onSetFee(bps: Int) = mutate { it.copy(feeBps = bps.coerceIn(0, Fee.MAX_BPS)) }
+
+    fun onTheme(mode: ThemeMode) = mutate { it.copy(theme = mode) }
 
     fun onKey(k: Key) = mutate { s ->
         val e = s.expression
@@ -206,6 +210,7 @@ class ConvertViewModel(
             loaded = true,
             feeOn = s.feeOn,
             feeBps = s.feeBps,
+            theme = s.theme,
         )
     }
 }

@@ -32,8 +32,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import dev.ticker.converter.core.model.CurrencyKind
 import dev.ticker.converter.data.catalog.CurrencyCatalog
 import dev.ticker.converter.ui.theme.TickerColors
@@ -48,7 +46,7 @@ import androidx.compose.ui.unit.sp
 /** Full-screen search over code and name, with FIAT and CRYPTO sections. */
 @Composable
 fun CurrencyPicker(catalog: CurrencyCatalog, exclude: Set<String>, onPick: (String) -> Unit, onDismiss: () -> Unit) {
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    FullScreenDialog(onDismissRequest = onDismiss) {
         var query by rememberSaveable { mutableStateOf("") }
         val focus = remember { FocusRequester() }
         LaunchedEffect(Unit) { focus.requestFocus() }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Ticker" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowBackground">@color/ticker_window</item>
     </style>
     <!-- Convert-from-selection card: drawn over the calling app, which stays visible behind a dim. -->
     <style name="Theme.Ticker.Selection" parent="Theme.Ticker">

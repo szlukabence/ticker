@@ -270,4 +270,17 @@ class ConvertViewModelTest {
         assertEquals("HUF", inner.state.value.activeCode)
         assertEquals("1290", inner.state.value.expression)
     }
+
+    // ---- theme ----
+
+    @Test fun themeChoicePersistsAndShows() = runTest {
+        val s = seeded()
+        val vm = vm(s)
+        assertEquals(dev.ticker.converter.core.model.ThemeMode.SYSTEM, vm.state.value.theme)
+        vm.onTheme(dev.ticker.converter.core.model.ThemeMode.LIGHT)
+        testScheduler.advanceUntilIdle()
+        assertEquals(dev.ticker.converter.core.model.ThemeMode.LIGHT, s.state.value.theme)
+        assertEquals(dev.ticker.converter.core.model.ThemeMode.LIGHT, vm.state.value.theme)
+        assertEquals(listOf("EUR", "HUF", "USD", "BTC"), s.state.value.favorites)
+    }
 }

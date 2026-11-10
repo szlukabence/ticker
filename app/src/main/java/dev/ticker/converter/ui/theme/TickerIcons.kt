@@ -44,5 +44,13 @@ object TickerIcons {
     val Gallery = icon("Gallery", "M4 5h16v14H4z", "M4 16l5-5 4 4 2-2 5 5", "M15.5 9.5h.01")
     val Pause = icon("Pause", "M9 6v12M15 6v12", stroke = 2.5f)
     val Info = icon("Info", "M21 12a9 9 0 1 1-18 0a9 9 0 1 1 18 0", "M12 11v5", "M12 8h.01", stroke = 2f)
+    val Sun = icon(
+        "Sun", "M16 12a4 4 0 1 1-8 0a4 4 0 1 1 8 0",
+        "M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4",
+    )
+    val Moon = icon("Moon", "M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z")
+    /** Half-filled circle: "follow the phone". */
+    val Auto = icon("Auto", "M20 12a8 8 0 1 1-16 0a8 8 0 1 1 16 0", "M12 4a8 8 0 0 1 0 16z")
+    val Check = icon("Check", "M5 12.5l4.5 4.5L19 7.5", stroke = 2f)
     val Play = icon("Play", "M8 5l11 7-11 7z", filled = true)
 }

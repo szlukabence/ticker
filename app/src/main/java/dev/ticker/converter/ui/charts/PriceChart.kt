@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.ticker.converter.core.model.PricePoint
 import dev.ticker.converter.ui.theme.MonoFamily
-import dev.ticker.converter.ui.theme.TickerColors
+import dev.ticker.converter.ui.theme.LocalTickerPalette
 import java.math.BigDecimal
 import java.time.Instant
 
@@ -51,7 +51,8 @@ fun PriceChart(
     formatTime: (Instant) -> String,
     modifier: Modifier = Modifier,
 ) {
-    val color = if (positive) TickerColors.Accent else TickerColors.Negative
+    val palette = LocalTickerPalette.current
+    val color = if (positive) palette.accent else palette.negative
     val measurer = rememberTextMeasurer()
     var touchX by remember { mutableStateOf<Float?>(null) }
     val values = remember(points) { points.map { it.value.toDouble() } }
@@ -79,7 +80,7 @@ fun PriceChart(
         val bottom = size.height - 4.dp.toPx()
         val h = bottom - top
         listOf(0f, 0.5f, 1f).forEach { f ->
-            drawLine(Color(0xFF1A1A1A), Offset(0f, top + h * f), Offset(size.width, top + h * f), 1.dp.toPx(),
+            drawLine(palette.divider, Offset(0f, top + h * f), Offset(size.width, top + h * f), 1.dp.toPx(),
                 pathEffect = PathEffect.dashPathEffect(floatArrayOf(3.dp.toPx(), 5.dp.toPx())))
         }
         if (values.size < 2) return@Canvas
@@ -101,7 +102,7 @@ fun PriceChart(
         }
         drawPath(area, Brush.verticalGradient(listOf(color.copy(alpha = 0.22f), color.copy(alpha = 0f)), startY = top, endY = bottom))
         // Neon: a blurred copy of the line under the crisp one (blur needs Android 9+).
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        if (palette.glows && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             drawIntoCanvas { c ->
                 val glow = android.graphics.Paint().apply {
                     isAntiAlias = true
@@ -126,11 +127,11 @@ fun PriceChart(
             drawCircle(color.copy(alpha = 0.15f), 12.dp.toPx(), Offset(px, py))
             drawCircle(color, 5.dp.toPx(), Offset(px, py))
             val label = "${formatTime(points[i].time)} · ${formatValue(points[i].value)}"
-            val layout = measurer.measure(label, TextStyle(fontFamily = MonoFamily, fontSize = 10.sp, color = TickerColors.Text))
+            val layout = measurer.measure(label, TextStyle(fontFamily = MonoFamily, fontSize = 10.sp, color = palette.text))
             val pad = 6.dp.toPx()
             val w = layout.size.width + pad * 2
             val left = (px - w / 2).coerceIn(0f, size.width - w)
-            drawRoundRect(Color(0xFF0D0D0D), Offset(left, 0f), Size(w, layout.size.height + pad), CornerRadius(9.dp.toPx()))
+            drawRoundRect(palette.surface, Offset(left, 0f), Size(w, layout.size.height + pad), CornerRadius(9.dp.toPx()))
             drawRoundRect(color.copy(alpha = 0.5f), Offset(left, 0f), Size(w, layout.size.height + pad), CornerRadius(9.dp.toPx()), style = Stroke(1.dp.toPx()))
             drawText(layout, topLeft = Offset(left + pad, pad / 2))
         }

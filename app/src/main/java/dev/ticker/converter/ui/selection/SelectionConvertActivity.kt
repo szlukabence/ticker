@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import dev.ticker.converter.MainActivity
 import dev.ticker.converter.TickerApp
 import dev.ticker.converter.ui.theme.TickerTheme
+import dev.ticker.converter.ui.theme.rememberDarkTheme
 
 /** "Convert" in the text-selection menu of other apps (PROCESS_TEXT). Shows a card over the caller. */
 class SelectionConvertActivity : ComponentActivity() {
@@ -15,7 +16,7 @@ class SelectionConvertActivity : ComponentActivity() {
         val text = intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString().orEmpty()
         val container = (application as TickerApp).container
         setContent {
-            TickerTheme {
+            TickerTheme(rememberDarkTheme(container.settings)) {
                 SelectionCard(
                     text = text,
                     container = container,

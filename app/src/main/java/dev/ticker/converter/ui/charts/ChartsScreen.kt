@@ -140,7 +140,7 @@ private fun ChartsScreen(state: ChartsUiState, vm: ChartsViewModel, container: A
                         .then(if (on) Modifier.glow(alpha = 0.25f, blur = 10.dp, corner = 16.dp) else Modifier)
                         .height(34.dp)
                         .clip(shape)
-                        .background(if (on) Color(0xFF0B0B0B) else Color.Transparent)
+                        .background(if (on) TickerColors.Surface else Color.Transparent)
                         .border(1.dp, if (on) TickerColors.Accent.copy(alpha = 0.6f) else Color.Transparent, shape)
                         .selectable(selected = on, role = Role.Tab) { if (enabled) vm.onRange(r) else hint = true },
                     contentAlignment = Alignment.Center,
@@ -148,7 +148,7 @@ private fun ChartsScreen(state: ChartsUiState, vm: ChartsViewModel, container: A
                     Text(
                         r.label,
                         style = MaterialTheme.typography.labelMedium,
-                        color = when { on -> TickerColors.Accent; enabled -> TickerColors.Dim; else -> Color(0xFF3A3A3A) },
+                        color = when { on -> TickerColors.Accent; enabled -> TickerColors.Dim; else -> TickerColors.Disabled },
                     )
                 }
             }

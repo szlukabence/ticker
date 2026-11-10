@@ -24,6 +24,7 @@ Ticker is a free currency converter with no ads, no account and no tracking.
 <ul>
 <li>Select a price in any app and choose "Convert" from the text menu.</li>
 <li>A home-screen widget with your favourite rates.</li>
+<li>Light and dark themes; follows your phone's setting unless you pick one.</li>
 </ul>
 
 <b>Where the rates come from</b>

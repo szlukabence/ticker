@@ -43,6 +43,7 @@ import dev.ticker.converter.ui.components.FeeChip
 import dev.ticker.converter.ui.components.FeeSheet
 import dev.ticker.converter.ui.components.NeonIconButton
 import dev.ticker.converter.ui.components.NeonPillButton
+import dev.ticker.converter.ui.components.ThemeButton
 import dev.ticker.converter.ui.theme.TickerColors
 import dev.ticker.converter.ui.theme.TickerIcons
 import dev.ticker.converter.ui.theme.tile
@@ -81,6 +82,7 @@ private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container
                 FeeChip(state.feeOn, state.feeBps, vm::onToggleFee, { feeSheet = true }, Modifier.padding(end = 4.dp))
                 NeonIconButton(TickerIcons.Edit, "Edit favourites", vm::onToggleEdit)
                 NeonIconButton(TickerIcons.Refresh, "Refresh rates", vm::onRefresh)
+                ThemeButton(state.theme, vm::onTheme)
                 NeonIconButton(TickerIcons.Info, "About Ticker", { about = true })
             }
         }

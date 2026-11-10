@@ -266,6 +266,7 @@ private fun CameraScreen(vm: CameraViewModel, container: AppContainer, onOpenCon
         val box = if (receiptMode) RectF(wPx * RECEIPT_X, hPx * RECEIPT_TOP, wPx * (1 - RECEIPT_X), hPx * RECEIPT_BOTTOM) else priceBox
 
         AndroidView({ previewView }, Modifier.fillMaxSize())
+        val accent = TickerColors.Accent
         Canvas(Modifier.fillMaxSize()) {
             val scrim = if (receiptMode) Color(0x80000000) else Color(0xB3000000)
             drawRect(scrim, Offset.Zero, androidx.compose.ui.geometry.Size(size.width, box.top))
@@ -278,14 +279,14 @@ private fun CameraScreen(vm: CameraViewModel, container: AppContainer, onOpenCon
                         isAntiAlias = true
                         style = android.graphics.Paint.Style.STROKE
                         strokeWidth = 6.dp.toPx()
-                        color = TickerColors.Accent.copy(alpha = 0.6f).toArgb()
+                        color = accent.copy(alpha = 0.6f).toArgb()
                         maskFilter = android.graphics.BlurMaskFilter(10.dp.toPx(), android.graphics.BlurMaskFilter.Blur.NORMAL)
                     }
                     c.nativeCanvas.drawRoundRect(box.left, box.top, box.right, box.bottom, 14.dp.toPx(), 14.dp.toPx(), glow)
                 }
             }
             drawRoundRect(
-                TickerColors.Accent, Offset(box.left, box.top), androidx.compose.ui.geometry.Size(box.width(), box.height()),
+                accent, Offset(box.left, box.top), androidx.compose.ui.geometry.Size(box.width(), box.height()),
                 CornerRadius(14.dp.toPx()), style = Stroke(2.dp.toPx()),
             )
         }

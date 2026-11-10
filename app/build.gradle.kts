@@ -13,8 +13,8 @@ android {
         applicationId = "io.github.szlukabence.ticker"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // F-Droid builds one APK per processor type with -Pabi=<abi>. Each gets versionCode*10 + n; the

@@ -16,8 +16,8 @@ RepoType: git
 Repo: https://github.com/szlukabence/ticker.git
 
 Builds:
-  - versionName: 0.1.0
-    versionCode: 10
+  - versionName: 0.2.0
+    versionCode: 20
     commit: COMMIT_HASH
     subdir: app
     gradle:
@@ -25,8 +25,8 @@ Builds:
     gradleprops:
       - abi=armeabi-v7a
 
-  - versionName: 0.1.0
-    versionCode: 11
+  - versionName: 0.2.0
+    versionCode: 21
     commit: COMMIT_HASH
     subdir: app
     gradle:
@@ -34,8 +34,8 @@ Builds:
     gradleprops:
       - abi=x86
 
-  - versionName: 0.1.0
-    versionCode: 12
+  - versionName: 0.2.0
+    versionCode: 22
     commit: COMMIT_HASH
     subdir: app
     gradle:
@@ -43,8 +43,8 @@ Builds:
     gradleprops:
       - abi=arm64-v8a
 
-  - versionName: 0.1.0
-    versionCode: 13
+  - versionName: 0.2.0
+    versionCode: 23
     commit: COMMIT_HASH
     subdir: app
     gradle:
@@ -59,5 +59,5 @@ VercodeOperation:
   - 10*%c+1
   - 10*%c+2
   - 10*%c+3
-CurrentVersion: 0.1.0
-CurrentVersionCode: 13
+CurrentVersion: 0.2.0
+CurrentVersionCode: 23

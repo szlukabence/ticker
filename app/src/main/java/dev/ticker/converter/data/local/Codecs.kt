@@ -9,7 +9,9 @@ import kotlinx.serialization.json.Json
 import java.math.BigDecimal
 import java.time.Instant
 
-private val codecJson = Json { ignoreUnknownKeys = true }
+// coerceInputValues: an enum value this version doesn't know (say, from a newer release) falls back
+// to the field's default instead of failing the whole decode and losing every other setting.
+private val codecJson = Json { ignoreUnknownKeys = true; coerceInputValues = true }
 
 object SnapshotCodec {
     @Serializable

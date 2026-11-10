@@ -1,5 +1,6 @@
 package dev.ticker.converter.ui.nav
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,10 +22,12 @@ import dev.ticker.converter.ui.charts.ChartsRoute
 import dev.ticker.converter.ui.camera.CameraRoute
 import androidx.compose.ui.graphics.Color
 import dev.ticker.converter.ui.theme.TickerColors
+import dev.ticker.converter.ui.theme.SystemBarsFor
+import dev.ticker.converter.ui.theme.TickerTheme
 import dev.ticker.converter.ui.theme.dotGrid
 
 @Composable
-fun TickerNavHost(container: AppContainer) {
+fun TickerNavHost(container: AppContainer, appDark: Boolean, activity: ComponentActivity) {
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
     val current = Tab.entries.firstOrNull { it.route == entry?.destination?.route } ?: Tab.CONVERT
@@ -35,19 +38,26 @@ fun TickerNavHost(container: AppContainer) {
             restoreState = true
         }
     }
-    // The dot grid sits behind every tab and the dock; screens draw on a transparent background.
-    Box(Modifier.fillMaxSize().dotGrid()) { Scaffold(
-        containerColor = Color.Transparent,
-        // A transparent container has no matching content colour, so name the text colour explicitly.
-        contentColor = TickerColors.Text,
-        // Each screen applies its own status-bar inset (Camera draws under it); the bottom bar pads itself.
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        bottomBar = { BottomBar(current, select) },
-    ) { padding ->
-        NavHost(nav, startDestination = Tab.CONVERT.route, modifier = Modifier.padding(padding)) {
-            composable(Tab.CONVERT.route) { ConvertRoute(container) }
-            composable(Tab.CHARTS.route) { ChartsRoute(container) }
-            composable(Tab.CAMERA.route) { CameraRoute(container, onOpenConvert = { select(Tab.CONVERT) }) }
+    // Camera controls sit on the live picture, so the Camera tab (dock included) is always dark.
+    val dark = appDark || current == Tab.CAMERA
+    SystemBarsFor(activity, dark)
+    TickerTheme(dark) {
+        // The dot grid sits behind every tab and the dock; screens draw on a transparent background.
+        Box(Modifier.fillMaxSize().dotGrid()) {
+            Scaffold(
+                containerColor = Color.Transparent,
+                // A transparent container has no matching content colour, so name the text colour explicitly.
+                contentColor = TickerColors.Text,
+                // Each screen applies its own status-bar inset (Camera draws under it); the bottom bar pads itself.
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                bottomBar = { BottomBar(current, select) },
+            ) { padding ->
+                NavHost(nav, startDestination = Tab.CONVERT.route, modifier = Modifier.padding(padding)) {
+                    composable(Tab.CONVERT.route) { ConvertRoute(container) }
+                    composable(Tab.CHARTS.route) { ChartsRoute(container) }
+                    composable(Tab.CAMERA.route) { CameraRoute(container, onOpenConvert = { select(Tab.CONVERT) }) }
+                }
+            }
         }
-    } }
+    }
 }

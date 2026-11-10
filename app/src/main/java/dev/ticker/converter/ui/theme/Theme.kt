@@ -2,39 +2,58 @@ package dev.ticker.converter.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
+/** The current palette's main colours, by the names the screens have always used. */
 object TickerColors {
-    val Bg = Color(0xFF000000)
-    val Text = Color(0xFFE6E6E6)
-    val Accent = Color(0xFF2BFF88)
-    val Negative = Color(0xFFFF4D6A)
-    val Warning = Color(0xFFFFB020)
-    val Divider = Color(0xFF161616)
-    val Dim = Color(0xFF777777)
-    val Surface = Color(0xFF0D0D0D)
-    val SurfaceBorder = Color(0xFF1D1D1D)
-    val ActiveRow = Color(0xFF06150D)
+    val Bg: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.bg
+    val Text: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.text
+    val Accent: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.accent
+    val OnAccent: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.onAccent
+    val Negative: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.negative
+    val Warning: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.warning
+    val Divider: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.divider
+    val Dim: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.dim
+    val Disabled: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.disabled
+    val Surface: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.surface
+    val SurfaceBorder: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.surfaceBorder
+    val ActiveRow: Color @Composable @ReadOnlyComposable get() = LocalTickerPalette.current.activeRow
 }
 
-private val scheme = darkColorScheme(
-    primary = TickerColors.Accent,
-    onPrimary = Color.Black,
-    background = TickerColors.Bg,
-    onBackground = TickerColors.Text,
-    surface = TickerColors.Bg,
-    onSurface = TickerColors.Text,
-    surfaceVariant = TickerColors.Surface,
-    onSurfaceVariant = TickerColors.Dim,
-    surfaceContainer = TickerColors.Surface,
-    surfaceContainerHigh = TickerColors.Surface,
-    outline = TickerColors.SurfaceBorder,
-    outlineVariant = TickerColors.Divider,
-    error = TickerColors.Negative,
+private fun schemeOf(p: TickerPalette) = (if (p.glows) darkColorScheme() else lightColorScheme()).copy(
+    primary = p.accent,
+    onPrimary = p.onAccent,
+    background = p.bg,
+    onBackground = p.text,
+    surface = p.bg,
+    onSurface = p.text,
+    surfaceVariant = p.surface,
+    onSurfaceVariant = p.dim,
+    surfaceContainer = p.surface,
+    surfaceContainerHigh = p.surface,
+    outline = p.surfaceBorder,
+    outlineVariant = p.divider,
+    error = p.negative,
+)
+
+private val darkScheme = schemeOf(DarkPalette)
+
+// Material's default light containers are lavender; keep every container on the paper palette.
+private val lightScheme = schemeOf(LightPalette).copy(
+    surfaceContainerLow = LightPalette.surface,
+    surfaceContainerLowest = LightPalette.surface,
+    surfaceContainerHighest = LightPalette.chip,
+    surfaceTint = LightPalette.accent,
 )
 
 @Composable
-fun TickerTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = scheme, typography = TickerTypography, content = content)
+fun TickerTheme(dark: Boolean = true, content: @Composable () -> Unit) {
+    val palette = if (dark) DarkPalette else LightPalette
+    CompositionLocalProvider(LocalTickerPalette provides palette) {
+        MaterialTheme(colorScheme = if (dark) darkScheme else lightScheme, typography = TickerTypography, content = content)
+    }
 }

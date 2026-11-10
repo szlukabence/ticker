@@ -63,7 +63,7 @@ fun Keypad(decimalLabel: Char, onKey: (Key) -> Unit, modifier: Modifier = Modifi
                             .then(if (style == Style.EQ) Modifier.glow(alpha = 0.45f, blur = 16.dp, corner = 26.dp) else Modifier)
                             .height(52.dp)
                             .clip(shape)
-                            .background(if (style == Style.EQ) TickerColors.Accent else Color(0xE60C0C0C))
+                            .background(if (style == Style.EQ) TickerColors.Accent else Neon.Key)
                             .border(
                                 1.dp,
                                 when (style) { Style.EQ -> TickerColors.Accent; Style.OP -> Neon.OpBorder; Style.NUM -> TickerColors.SurfaceBorder },
@@ -80,7 +80,7 @@ fun Keypad(decimalLabel: Char, onKey: (Key) -> Unit, modifier: Modifier = Modifi
                         val color = when (style) {
                             Style.NUM -> TickerColors.Text
                             Style.OP -> TickerColors.Accent
-                            Style.EQ -> Color.Black
+                            Style.EQ -> TickerColors.OnAccent
                         }
                         if (key == Key.Backspace) {
                             Icon(TickerIcons.Backspace, contentDescription = "Backspace (hold to clear)", tint = color)
