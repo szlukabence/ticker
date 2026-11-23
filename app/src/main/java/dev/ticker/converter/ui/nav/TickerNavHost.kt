@@ -11,7 +11,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.navArgument
+import dev.ticker.converter.ui.trips.TripRoute
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -60,7 +63,12 @@ fun TickerNavHost(container: AppContainer, appDark: Boolean, activity: Component
                 NavHost(nav, startDestination = Tab.CONVERT.route, modifier = Modifier.padding(padding)) {
                     composable(Tab.CONVERT.route) { ConvertRoute(container, onOpenTrip = { nav.navigate("trip/$it") }) }
                     // Placeholders until the trip screens arrive.
-                    composable("trip/{id}") { Box(Modifier.fillMaxSize()) }
+                    composable("trip/{id}", arguments = listOf(navArgument("id") { type = NavType.StringType })) { back ->
+                        TripRoute(
+                            container, back.arguments?.getString("id").orEmpty(),
+                            onBack = { nav.popBackStack() }, onOpenTrips = { nav.navigate("trips") },
+                        )
+                    }
                     composable("trips") { Box(Modifier.fillMaxSize()) }
                     composable(Tab.CHARTS.route) { ChartsRoute(container) }
                     composable(Tab.CAMERA.route) { CameraRoute(container, onOpenConvert = { select(Tab.CONVERT) }) }

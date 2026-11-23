@@ -51,6 +51,8 @@ object TickerIcons {
     val Moon = icon("Moon", "M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z")
     /** Half-filled circle: "follow the phone". */
     val Auto = icon("Auto", "M20 12a8 8 0 1 1-16 0a8 8 0 1 1 16 0", "M12 4a8 8 0 0 1 0 16z")
+    val Back = icon("Back", "M15 5l-7 7 7 7", stroke = 2f)
+    val More = icon("More", "M12 5h.01M12 12h.01M12 19h.01", stroke = 3f)
     val Check = icon("Check", "M5 12.5l4.5 4.5L19 7.5", stroke = 2f)
     val Play = icon("Play", "M8 5l11 7-11 7z", filled = true)
 }

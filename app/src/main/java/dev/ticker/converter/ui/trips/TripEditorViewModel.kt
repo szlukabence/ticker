@@ -93,9 +93,7 @@ class TripEditorViewModel(
 
     /** Blank means no budget; `.` or `,` is the decimal mark; zero or less is an error. */
     private fun parseBudget(text: String): Budget {
-        val t = text.filterNot { it.isWhitespace() }.replace(',', '.')
-        if (t.isEmpty()) return Budget.Value(null)
-        val v = t.toBigDecimalOrNull() ?: return Budget.Bad
-        return if (v.signum() > 0) Budget.Value(v) else Budget.Bad
+        if (text.isBlank()) return Budget.Value(null)
+        return parseAmount(text)?.let { Budget.Value(it) } ?: Budget.Bad
     }
 }
