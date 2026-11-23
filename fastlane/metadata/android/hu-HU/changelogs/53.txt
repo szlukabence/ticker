@@ -1,0 +1,1 @@
+A Ticker mostantól magyarul is tud. Követi a telefon nyelvét; Android 13-tól és újabb verziókon alkalmazásonként is kiválasztható a rendszerbeállításokban. A pénznemek nevei és a grafikonok dátumai is követik a nyelvet.

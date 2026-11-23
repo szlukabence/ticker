@@ -1,0 +1,1 @@
+Ticker now speaks Hungarian. It follows your phone's language; on Android 13 and newer you can also pick it per app in system settings. Currency names and chart dates follow the language too.

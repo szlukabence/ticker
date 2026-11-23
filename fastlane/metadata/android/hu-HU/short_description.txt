@@ -1,0 +1,1 @@
+Valuta- és kriptoátváltó kamerás ár- és blokkolvasással.

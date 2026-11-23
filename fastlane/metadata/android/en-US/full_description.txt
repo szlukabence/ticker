@@ -26,6 +26,7 @@ Ticker is a free currency converter with no ads, no account and no tracking.
 <li>A home-screen widget with your favourite rates.</li>
 <li>A Quick Settings tile to open Ticker, and long-press shortcuts for Scan price and Charts.</li>
 <li>Light and dark themes; follows your phone's setting unless you pick one.</li>
+<li>Available in English and Hungarian.</li>
 </ul>
 
 <b>Where the rates come from</b>

@@ -1,0 +1,33 @@
+A Ticker ingyenes valutaátváltó, reklámok, fiók és követés nélkül.
+
+<b>Átváltás</b>
+<ul>
+<li>Számológép-stílusú lista a kedvenc pénznemeidről: írd be az egyiket, és látod az összes többit.</li>
+<li>Több mint 300 hagyományos pénznem és kriptovaluta.</li>
+<li>Friss árfolyamok minden megnyitáskor, az utolsó árfolyamok pedig offline is elérhetők.</li>
+<li>Opcionális kártyadíj, hogy nagyjából lásd, mennyit számol fel a bankod.</li>
+</ul>
+
+<b>Grafikonok</b>
+<ul>
+<li>Napi előzmények bármely párhoz, egy héttől a nagyobb pénznemek teljes EKB-adatsoráig.</li>
+</ul>
+
+<b>Kamera</b>
+<ul>
+<li>Irányítsd a kamerát egy árcédulára, és élőben látod az átváltott összeget.</li>
+<li>A blokk üzemmód a blokk minden sorát beolvassa, és átváltja a végösszeget.</li>
+<li>A szövegfelismerés a telefonon fut. A fotókat soha nem tároljuk és nem töltjük fel.</li>
+</ul>
+
+<b>Mindenhol máshol</b>
+<ul>
+<li>Jelölj ki egy árat bármelyik alkalmazásban, és válaszd az „Átváltás” menüpontot a szövegmenüben.</li>
+<li>Kezdőképernyő-widget a kedvenc árfolyamaiddal.</li>
+<li>Gyorsbeállítás-csempe a Ticker megnyitásához, és hosszú lenyomásos parancsikonok az Ár beolvasása és a Grafikonok funkciókhoz.</li>
+<li>Világos és sötét téma; követi a telefon beállítását, hacsak nem választasz mást.</li>
+<li>Elérhető angolul és magyarul.</li>
+</ul>
+
+<b>Honnan származnak az árfolyamok</b>
+A főbb pénznemek az Európai Központi Bank napi referencia-árfolyamait használják (a frankfurter.dev-en keresztül). A többi pénznem és a kriptovaluták a közkincs fawazahmed0 árfolyam-API-ból származnak. Az árfolyamok csak tájékoztató jellegűek, nem a bankod vagy a pénzváltód által alkalmazott árfolyamok.
