@@ -12,26 +12,50 @@ import java.util.concurrent.ConcurrentHashMap
  * All currencies the app knows. Fiat comes from the bundled ISO list; crypto is added at runtime
  * from the rate sources. A crypto ticker that equals a fiat code is never registered.
  */
-class CurrencyCatalog(fiat: List<Currency>, private val cryptoNames: Map<String, String>) {
+class CurrencyCatalog(
+    fiat: List<Currency>,
+    private val cryptoNames: Map<String, String>,
+    /** Languages whose fiat names come from the platform (java.util.Currency); others keep the bundled English. */
+    private val localizedLanguages: Set<String> = emptySet(),
+    private val locale: () -> Locale = Locale::getDefault,
+) {
     private val fiatByCode: Map<String, Currency> = fiat.associateBy { it.code.uppercase() }
     private val cryptoByCode = ConcurrentHashMap<String, Currency>()
+    private val localizedFiat = ConcurrentHashMap<Locale, Map<String, Currency>>()
+
+    /** Fiat currencies with names in the current language; the bundled English map when that has no translation. */
+    private fun fiatNow(): Map<String, Currency> {
+        val loc = locale()
+        if (loc.language !in localizedLanguages) return fiatByCode
+        return localizedFiat.getOrPut(loc) {
+            fiatByCode.mapValues { (code, c) ->
+                val name = runCatching { java.util.Currency.getInstance(code).getDisplayName(loc) }.getOrNull()
+                    ?.takeIf { it.isNotBlank() && !it.equals(code, ignoreCase = true) }
+                if (name != null) c.copy(name = name) else c
+            }
+        }
+    }
 
     fun get(code: String): Currency? {
         val c = code.uppercase()
-        return fiatByCode[c] ?: cryptoByCode[c]
+        return fiatNow()[c] ?: cryptoByCode[c]
     }
 
     fun isFiat(code: String): Boolean = code.uppercase() in fiatByCode
 
     fun all(): List<Currency> =
-        fiatByCode.values.sortedBy { it.code } + cryptoByCode.values.sortedBy { it.code }
+        fiatNow().values.sortedBy { it.code } + cryptoByCode.values.sortedBy { it.code }
 
     fun search(query: String): List<Currency> {
         val q = query.trim()
         if (q.isEmpty()) return all()
         val all = all()
         val byCode = all.filter { it.code.startsWith(q, ignoreCase = true) }
-        val byName = all.filter { it !in byCode && it.name.contains(q, ignoreCase = true) }
+        // Also match the bundled English name, so "dollar" still finds USD in Hungarian.
+        val byName = all.filter {
+            it !in byCode && (it.name.contains(q, ignoreCase = true) ||
+                fiatByCode[it.code]?.name?.contains(q, ignoreCase = true) == true)
+        }
         return byCode + byName
     }
 
@@ -70,7 +94,7 @@ class CurrencyCatalog(fiat: List<Currency>, private val cryptoNames: Map<String,
             val fiat = json.decodeFromString<List<FiatJson>>(fiatText)
                 .map { Currency(it.code, it.name, CurrencyKind.FIAT, it.flag, it.decimals) }
             val names = json.decodeFromString<Map<String, String>>(cryptoText)
-            return CurrencyCatalog(fiat, names).also { it.registerCryptos(listOf("BTC", "ETH")) }
+            return CurrencyCatalog(fiat, names, localizedLanguages = setOf("hu")).also { it.registerCryptos(listOf("BTC", "ETH")) }
         }
     }
 }
