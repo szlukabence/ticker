@@ -61,7 +61,13 @@ data class Settings(
     val cameraMode: CameraMode = CameraMode.PRICE,
     /** Light or dark look; SYSTEM follows the phone's dark-mode setting. */
     val theme: ThemeMode = ThemeMode.SYSTEM,
+    /** How the last trip entry was paid; the next one-tap Add reuses it. */
+    val lastPayment: Payment = Payment.CARD,
 )
+
+/** Card payments carry the card fee in a trip entry; cash does not. */
+@Serializable
+enum class Payment { CARD, CASH }
 
 @Serializable
 enum class ThemeMode {
