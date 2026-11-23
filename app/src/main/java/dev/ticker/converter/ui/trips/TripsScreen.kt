@@ -63,13 +63,12 @@ fun TripsRoute(container: AppContainer, onBack: () -> Unit, onOpenTrip: (String)
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var menu by remember { mutableStateOf(false) }
-    var pendingBackup by remember { mutableStateOf<String?>(null) }
 
+    // The content is rebuilt in the callback, so it survives the app being recreated while the picker is open.
     val saveLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri: Uri? ->
-        val content = pendingBackup
-        pendingBackup = null
-        if (uri != null && content != null) {
+        if (uri != null) {
             scope.launch {
+                val content = vm.backup().second
                 val ok = withContext(Dispatchers.IO) {
                     runCatching { context.contentResolver.openOutputStream(uri)?.use { it.write(content.toByteArray(Charsets.UTF_8)) } != null }.getOrDefault(false)
                 }
@@ -103,9 +102,7 @@ fun TripsRoute(container: AppContainer, onBack: () -> Unit, onOpenTrip: (String)
                         onClick = {
                             menu = false
                             scope.launch {
-                                val (name, content) = vm.backup()
-                                pendingBackup = content
-                                saveLauncher.launch(name)
+                                saveLauncher.launch(vm.backup().first)
                             }
                         },
                     )

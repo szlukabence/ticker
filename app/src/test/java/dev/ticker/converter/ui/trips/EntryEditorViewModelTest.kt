@@ -29,6 +29,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
+import kotlinx.coroutines.async
 import org.junit.Test
 import java.math.BigDecimal
 import java.time.Instant
@@ -184,5 +185,31 @@ class EntryEditorViewModelTest {
         val vm = vm(existing)
         vm.delete()
         assertEquals(1, store.allEntries().size)
+    }
+
+    // Final review: a double tap on Save must not add the entry twice.
+    @Test fun doubleSaveAddsOnce() = runTest {
+        val vm = vm()
+        vm.onAmount("10"); vm.onCode("EUR")
+        val a = async { vm.save() }
+        val b = async { vm.save() }
+        a.await(); b.await()
+        assertEquals(1, store.allEntries().size)
+    }
+
+    @Test fun saveAfterFailureWorksAgain() = runTest {
+        val vm = vm()
+        vm.onAmount("abc")
+        assertFalse(vm.save())
+        vm.onAmount("10"); vm.onCode("EUR")
+        assertTrue(vm.save())
+    }
+
+    @Test fun savingIntoDeletedTripSaysSo() = runTest {
+        val vm = vm()
+        store.deleteTrip("t")
+        vm.onAmount("10"); vm.onCode("EUR")
+        assertFalse(vm.save())
+        assertEquals(UiText.Res(R.string.entry_error_trip_gone), vm.state.value.error)
     }
 }

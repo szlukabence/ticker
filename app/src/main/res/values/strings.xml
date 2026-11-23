@@ -258,4 +258,5 @@
         <item quantity="one">%d entry</item>
         <item quantity="other">%d entries</item>
     </plurals>
+    <string name="entry_error_trip_gone">This trip no longer exists</string>
 </resources>

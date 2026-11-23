@@ -109,4 +109,26 @@ class TripEditorViewModelTest {
         assertEquals("Wien 2026", store.allTrips().single().name)
         assertEquals(0, BigDecimal("100000").compareTo(store.allTrips().single().budgetHome))
     }
+
+    // Final review: Edit trip must work from the stored trip, not from the copy captured when the editor opened.
+    @Test fun editAfterEndKeepsEndedAt() = runTest {
+        val t = (repo.start("Wien", "HUF", null) as TripsRepository.StartResult.Started).trip
+        val v = vm(t)
+        repo.end(t.id)
+        v.onName("Wien 2")
+        v.save()
+        val stored = store.allTrips().single()
+        assertEquals("Wien 2", stored.name)
+        assertFalse("an ended trip must stay ended", stored.active)
+    }
+
+    @Test fun homeLockedByEntryAddedAfterEditorOpened() = runTest {
+        val t = (repo.start("Wien", "HUF", null) as TripsRepository.StartResult.Started).trip
+        val v = vm(t)
+        repo.add(entry(t.id))
+        v.onHome("EUR")
+        v.onName("Wien 2")
+        assertNotNull(v.save())
+        assertEquals("HUF", store.allTrips().single().homeCode)
+    }
 }

@@ -81,7 +81,8 @@ fun ConvertRoute(container: AppContainer, onOpenTrip: (String) -> Unit = {}) {
 @Composable
 private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container: AppContainer, onOpenTrip: (String) -> Unit) {
     var picking by remember { mutableStateOf(false) }
-    var tripEditor by remember { mutableStateOf(0) } // 0 = closed; each open gets a fresh editor
+    var tripEditorOpen by remember { mutableStateOf(false) }
+    var tripEditorSeq by remember { mutableStateOf(0) } // every open gets its own editor, so no old draft comes back
     var feeSheet by remember { mutableStateOf(false) }
     var about by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
@@ -112,7 +113,7 @@ private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container
                 if (state.trip != null && state.addBlocked != Reason.ZERO_AMOUNT) {
                     TripAddButton(state.addBlocked, vm::onAddToTrip, Modifier.padding(end = 6.dp))
                 }
-                TripChip(state.trip, { tripEditor = tripEditor + 1 }, { state.trip?.let { onOpenTrip(it.id) } })
+                TripChip(state.trip, { tripEditorSeq += 1; tripEditorOpen = true }, { state.trip?.let { onOpenTrip(it.id) } })
             }
         }
         SavedLine(state.saved, vm::onUndoAdd, Modifier.padding(bottom = 4.dp))
@@ -172,11 +173,11 @@ private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container
     if (about) {
         AboutScreen { about = false }
     }
-    if (tripEditor > 0) {
-        val editor: TripEditorViewModel = viewModel(key = "trip-editor-$tripEditor") {
+    if (tripEditorOpen) {
+        val editor: TripEditorViewModel = viewModel(key = "trip-editor-$tripEditorSeq") {
             TripEditorViewModel(container.trips, container.catalog, container.catalog.defaultFavorites(systemLocale()).first(), null)
         }
-        TripEditorDialog(editor, container.catalog, onDismiss = { tripEditor = 0 }, onDone = { tripEditor = 0 })
+        TripEditorDialog(editor, container.catalog, onDismiss = { tripEditorOpen = false }, onDone = { tripEditorOpen = false })
     }
     if (feeSheet) {
         FeeSheet(state.feeBps, vm::onSetFee) { feeSheet = false }

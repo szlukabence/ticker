@@ -79,9 +79,9 @@ class TripViewModel(
         viewModelScope.launch { trips.end(tripId) }
     }
 
-    /** File name and content for Save CSV. */
-    suspend fun csv(): Pair<String, String> {
-        val trip = trips.trips.first().first { it.id == tripId }
+    /** File name and content for Save CSV; null when the trip is gone. */
+    suspend fun csv(): Pair<String, String>? {
+        val trip = trips.trips.first().firstOrNull { it.id == tripId } ?: return null
         val entries = trips.entries(tripId).first()
         return fileName(trip) to TripCsv.write(trip, entries, zone)
     }

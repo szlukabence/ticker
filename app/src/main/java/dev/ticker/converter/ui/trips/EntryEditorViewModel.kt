@@ -115,8 +115,17 @@ class EntryEditorViewModel(
         editing?.let { trips.deleteEntry(it.id) }
     }
 
-    /** True when saved. Otherwise [EntryEditorState.error] says why. */
+    private val saving = java.util.concurrent.atomic.AtomicBoolean(false)
+
+    /** True when saved. Otherwise [EntryEditorState.error] says why. A second tap while saving does nothing. */
     suspend fun save(): Boolean {
+        if (!saving.compareAndSet(false, true)) return false
+        val ok = try { doSave() } catch (e: Throwable) { saving.set(false); throw e }
+        if (!ok) saving.set(false)
+        return ok
+    }
+
+    private suspend fun doSave(): Boolean {
         val s = _state.value
         val actual = if (s.bankText.isBlank()) null else parseAmount(s.bankText) ?: return fail(R.string.entry_error_bank)
         val note = s.note.trim().ifEmpty { null }
@@ -124,7 +133,7 @@ class EntryEditorViewModel(
             editing.copy(note = note, payment = s.payment, at = s.at, actualHome = actual).also { trips.updateEntry(it) }
         } else {
             val amount = parseAmount(s.amountText) ?: return fail(R.string.entry_error_amount)
-            val trip = trips.trips.first().firstOrNull { it.id == tripId } ?: return false
+            val trip = trips.trips.first().firstOrNull { it.id == tripId } ?: return fail(R.string.entry_error_trip_gone)
             val prefs = settings.settings.first()
             when (val r = EntryFactory.fromConversion(
                 amount, s.code, trip, catalog.get(trip.homeCode)?.decimals ?: 2, rates.snapshot.value,

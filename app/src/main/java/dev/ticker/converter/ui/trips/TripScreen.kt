@@ -81,17 +81,18 @@ private fun TripScreen(state: TripUiState, vm: TripViewModel, container: AppCont
     var menu by remember { mutableStateOf(false) }
     var confirmEnd by remember { mutableStateOf(false) }
     var editTrip by remember { mutableStateOf(false) }
-    var newEntry by remember { mutableIntStateOf(0) }
+    var newEntryOpen by remember { mutableStateOf(false) }
+    var newEntrySeq by remember { mutableIntStateOf(0) } // every open gets its own editor
+    var editTripSeq by remember { mutableIntStateOf(0) }
     var editingEntry by remember { mutableStateOf<String?>(null) }
     var message by remember { mutableStateOf<Int?>(null) }
-    var pendingCsv by remember { mutableStateOf<String?>(null) }
 
+    // The file content is rebuilt in the callback, so it survives the app being recreated while the picker is open.
     val csvLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri: Uri? ->
-        val content = pendingCsv
-        pendingCsv = null
-        if (uri != null && content != null) {
+        if (uri != null) {
             scope.launch {
-                val ok = withContext(Dispatchers.IO) {
+                val content = vm.csv()?.second
+                val ok = content != null && withContext(Dispatchers.IO) {
                     runCatching {
                         context.contentResolver.openOutputStream(uri)?.use { it.write(content.toByteArray(Charsets.UTF_8)) } != null
                     }.getOrDefault(false)
@@ -116,18 +117,17 @@ private fun TripScreen(state: TripUiState, vm: TripViewModel, container: AppCont
                     Text(stringResource(R.string.trip_ended), color = TickerColors.Dim, style = MaterialTheme.typography.labelSmall)
                 }
             }
-            NeonPillButton(stringResource(R.string.trip_add_entry), { newEntry += 1 }, icon = TickerIcons.Plus, maxLines = 1, compact = true)
+            NeonPillButton(stringResource(R.string.trip_add_entry), { newEntrySeq += 1; newEntryOpen = true }, icon = TickerIcons.Plus, maxLines = 1, compact = true)
             Box {
                 NeonIconButton(TickerIcons.More, stringResource(R.string.trip_more), { menu = true }, tint = TickerColors.Text)
                 DropdownMenu(menu, { menu = false }, containerColor = TickerColors.Surface) {
-                    MenuItem(R.string.trip_menu_edit) { menu = false; editTrip = true }
+                    MenuItem(R.string.trip_menu_edit) { menu = false; editTripSeq += 1; editTrip = true }
                     if (trip?.active == true) MenuItem(R.string.trip_menu_end) { menu = false; confirmEnd = true }
                     MenuItem(R.string.trip_menu_csv) {
                         menu = false
                         scope.launch {
-                            val (name, content) = vm.csv()
-                            pendingCsv = content
-                            csvLauncher.launch(name)
+                            val csv = vm.csv()
+                            if (csv == null) message = R.string.trip_file_error else csvLauncher.launch(csv.first)
                         }
                     }
                     MenuItem(R.string.trip_menu_all) { menu = false; onOpenTrips() }
@@ -168,16 +168,16 @@ private fun TripScreen(state: TripUiState, vm: TripViewModel, container: AppCont
         )
     }
     if (editTrip && trip != null) {
-        val editor: TripEditorViewModel = viewModel(key = "trip-edit-$tripId") {
+        val editor: TripEditorViewModel = viewModel(key = "trip-edit-$tripId-$editTripSeq") {
             TripEditorViewModel(container.trips, container.catalog, trip.homeCode, trip)
         }
         TripEditorDialog(editor, container.catalog, onDismiss = { editTrip = false }, onDone = { editTrip = false })
     }
-    if (newEntry > 0) {
-        val editor: EntryEditorViewModel = viewModel(key = "entry-new-$tripId-$newEntry") {
+    if (newEntryOpen) {
+        val editor: EntryEditorViewModel = viewModel(key = "entry-new-$tripId-$newEntrySeq") {
             EntryEditorViewModel(container.trips, container.rates, container.settings, container.catalog, container.formatter, tripId, null, container.clock)
         }
-        EntryEditorDialog(editor, container.catalog, onDismiss = { newEntry = 0 }, onDone = { newEntry = 0 })
+        EntryEditorDialog(editor, container.catalog, onDismiss = { newEntryOpen = false }, onDone = { newEntryOpen = false })
     }
     editingEntry?.let { id ->
         EditExistingEntry(container, tripId, id) { editingEntry = null }

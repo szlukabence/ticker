@@ -9,6 +9,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
+import kotlinx.coroutines.async
 import org.junit.Test
 import java.math.BigDecimal
 import java.time.Instant
@@ -116,5 +117,20 @@ class TripsRepositoryTest {
 
     @Test fun blankNameRejected() = runTest {
         assertThrows(IllegalArgumentException::class.java) { kotlinx.coroutines.runBlocking { repo.start("   ", "HUF", null) } }
+    }
+
+    // Final review: a double tap on "Start trip" must not create two active trips.
+    @Test fun concurrentStartsMakeOneActive() = runTest {
+        val slow = object : dev.ticker.converter.trips.data.TripsStore by store {
+            override suspend fun allTrips(): List<Trip> { kotlinx.coroutines.yield(); return store.allTrips() }
+            override suspend fun upsertTrip(t: Trip) { kotlinx.coroutines.yield(); store.upsertTrip(t) }
+        }
+        val r = TripsRepository(slow, clock) { "id${++n}" }
+        val results = listOf(
+            async { r.start("A", "HUF", null) },
+            async { r.start("B", "HUF", null) },
+        ).map { it.await() }
+        assertEquals(1, results.count { it is TripsRepository.StartResult.Started })
+        assertEquals(1, store.allTrips().count { it.active })
     }
 }

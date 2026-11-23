@@ -3,6 +3,8 @@ package dev.ticker.converter.trips
 import dev.ticker.converter.trips.data.TripsStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.math.BigDecimal
 import java.time.Clock
 import java.util.UUID
@@ -31,7 +33,13 @@ class TripsRepository(
 
     val allEntries: Flow<List<Entry>> = store.allEntriesFlow()
 
-    suspend fun start(name: String, homeCode: String, budget: BigDecimal?): StartResult {
+    /** Start and end-and-start take turns, so a double tap can't leave two active trips. */
+    private val lock = Mutex()
+
+    suspend fun start(name: String, homeCode: String, budget: BigDecimal?): StartResult =
+        lock.withLock { startLocked(name, homeCode, budget) }
+
+    private suspend fun startLocked(name: String, homeCode: String, budget: BigDecimal?): StartResult {
         val clean = name.trim()
         require(clean.isNotEmpty()) { "Trip name must not be blank" }
         store.allTrips().firstOrNull { it.active }?.let { return StartResult.OtherActive(it) }
@@ -40,9 +48,9 @@ class TripsRepository(
         return StartResult.Started(trip)
     }
 
-    suspend fun endAndStart(name: String, homeCode: String, budget: BigDecimal?): Trip {
+    suspend fun endAndStart(name: String, homeCode: String, budget: BigDecimal?): Trip = lock.withLock {
         store.allTrips().filter { it.active }.forEach { end(it.id) }
-        return (start(name, homeCode, budget) as StartResult.Started).trip
+        (startLocked(name, homeCode, budget) as StartResult.Started).trip
     }
 
     suspend fun end(id: String) {

@@ -143,14 +143,14 @@ class TripViewModelTest {
 
     @Test fun csvFileName() = runTest {
         val vm = vm(trip(name = "Bécs tél"))
-        assertEquals("bécs-tél-2026-11-21.csv", vm.csv().first)
-        assertEquals("trip-2026-11-21.csv", vm(trip(name = "!!!")).csv().first)
+        assertEquals("bécs-tél-2026-11-21.csv", vm.csv()!!.first)
+        assertEquals("trip-2026-11-21.csv", vm(trip(name = "!!!")).csv()!!.first)
     }
 
     @Test fun csvContentMatchesTripCsv() = runTest {
         store.upsertEntry(entry("a", "2026-11-18T10:00:00Z", "1.00"))
         val vm = vm()
-        assertEquals(TripCsv.write(trip(), store.allEntries(), zone), vm.csv().second)
+        assertEquals(TripCsv.write(trip(), store.allEntries(), zone), vm.csv()!!.second)
     }
 
     @Test fun endTripEndsIt() = runTest {
@@ -159,5 +159,12 @@ class TripViewModelTest {
         testScheduler.runCurrent()
         assertFalse(store.allTrips().single().active)
         assertFalse(vm.state.value.trip!!.active)
+    }
+
+    // Final review: Save CSV on a trip that was deleted must not crash.
+    @Test fun csvNullWhenTripGone() = runTest {
+        val vm = vm()
+        store.deleteTrip("t")
+        assertNull(vm.csv())
     }
 }

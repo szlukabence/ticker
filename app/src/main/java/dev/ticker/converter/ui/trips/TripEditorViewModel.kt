@@ -62,7 +62,10 @@ class TripEditorViewModel(
         if (budget is Budget.Bad) return fail(R.string.trip_error_budget)
         val value = (budget as Budget.Value).amount
         if (editing != null) {
-            val t = editing.copy(name = name, homeCode = s.homeCode, budgetHome = value)
+            // Work from the stored trip: it may have been ended, or got entries, since the editor opened.
+            val stored = trips.trips.first().firstOrNull { it.id == editing.id } ?: return fail(R.string.entry_error_trip_gone)
+            val locked = trips.entries(stored.id).first().isNotEmpty()
+            val t = stored.copy(name = name, homeCode = if (locked) stored.homeCode else s.homeCode, budgetHome = value)
             trips.update(t)
             return t
         }

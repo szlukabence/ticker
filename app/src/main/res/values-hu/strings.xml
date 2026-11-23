@@ -227,4 +227,5 @@
         <item quantity="one">%d tétel</item>
         <item quantity="other">%d tétel</item>
     </plurals>
+    <string name="entry_error_trip_gone">Ez az utazás már nem létezik</string>
 </resources>
