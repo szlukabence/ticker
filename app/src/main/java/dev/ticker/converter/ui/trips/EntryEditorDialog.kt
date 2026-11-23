@@ -31,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -53,7 +54,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 /** A new manual entry, or the correction screen for a saved one. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,6 +64,7 @@ fun EntryEditorDialog(vm: EntryEditorViewModel, catalog: CurrencyCatalog, onDism
     var picking by remember { mutableStateOf(false) }
     var datePicking by remember { mutableStateOf(false) }
     val zone = remember { ZoneId.systemDefault() }
+    val locale = LocalConfiguration.current.locales[0]
 
     FullScreenDialog(onDismissRequest = onDismiss) {
         CompositionLocalProvider(LocalContentColor provides TickerColors.Text) {
@@ -107,7 +108,7 @@ fun EntryEditorDialog(vm: EntryEditorViewModel, catalog: CurrencyCatalog, onDism
                     EntryField(state.note, vm::onNote, stringResource(R.string.entry_note_label), KeyboardOptions.Default)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(R.string.entry_date_label), Modifier.weight(1f), color = TickerColors.Dim, style = MaterialTheme.typography.labelMedium)
-                        NeonPillButton(DateTimeFormatter.ofPattern("d MMM yyyy", Locale.getDefault()).format(state.at.atZone(zone)), { datePicking = true })
+                        NeonPillButton(DateTimeFormatter.ofPattern("d MMM yyyy", locale).format(state.at.atZone(zone)), { datePicking = true })
                     }
                     EntryField(state.bankText, vm::onBank, stringResource(R.string.entry_bank_label), KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     state.diffText?.let {

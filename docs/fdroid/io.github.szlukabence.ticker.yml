@@ -160,6 +160,42 @@ Builds:
     gradleprops:
       - abi=x86_64
 
+  - versionName: 0.3.0
+    versionCode: 60
+    commit: COMMIT_HASH
+    subdir: app
+    gradle:
+      - yes
+    gradleprops:
+      - abi=armeabi-v7a
+
+  - versionName: 0.3.0
+    versionCode: 61
+    commit: COMMIT_HASH
+    subdir: app
+    gradle:
+      - yes
+    gradleprops:
+      - abi=x86
+
+  - versionName: 0.3.0
+    versionCode: 62
+    commit: COMMIT_HASH
+    subdir: app
+    gradle:
+      - yes
+    gradleprops:
+      - abi=arm64-v8a
+
+  - versionName: 0.3.0
+    versionCode: 63
+    commit: COMMIT_HASH
+    subdir: app
+    gradle:
+      - yes
+    gradleprops:
+      - abi=x86_64
+
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 VercodeOperation:
@@ -167,5 +203,5 @@ VercodeOperation:
   - 10*%c+1
   - 10*%c+2
   - 10*%c+3
-CurrentVersion: 0.2.3
-CurrentVersionCode: 53
+CurrentVersion: 0.3.0
+CurrentVersionCode: 63

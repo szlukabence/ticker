@@ -13,7 +13,7 @@ object TripCsv {
     private val TIME = DateTimeFormatter.ofPattern("HH:mm", Locale.ROOT)
 
     fun write(trip: Trip, entries: List<Entry>, zone: ZoneId): String {
-        val sb = StringBuilder("﻿").append(HEADER).append("\r\n")
+        val sb = StringBuilder("\uFEFF").append(HEADER).append("\r\n")
         for (e in entries.sortedBy { it.at }) {
             val at = e.at.atZone(zone)
             val fields = listOf(

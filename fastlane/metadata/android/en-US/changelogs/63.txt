@@ -1,0 +1,1 @@
+New: Trips. Start a trip, save conversions and receipt totals with one tap, and see the total in your home currency with a daily average and an optional budget. Correct an entry with what your bank charged. Export a trip as CSV, and back up or restore all trips as a file. Everything stays on your phone.

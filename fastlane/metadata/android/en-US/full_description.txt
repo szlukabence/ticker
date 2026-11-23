@@ -20,6 +20,14 @@ Ticker is a free currency converter with no ads, no account and no tracking.
 <li>Text recognition runs on the phone. Photos are never stored or uploaded.</li>
 </ul>
 
+<b>Trips</b>
+<ul>
+<li>Start a trip, then save a conversion or a receipt total to it with one tap.</li>
+<li>See the total in your home currency, the daily average and what is left of an optional budget.</li>
+<li>Correct an entry with what your bank actually charged.</li>
+<li>Export a trip as CSV, and back up or restore all trips as a file. Everything stays on your phone.</li>
+</ul>
+
 <b>Everywhere else</b>
 <ul>
 <li>Select a price in any app and choose "Convert" from the text menu.</li>

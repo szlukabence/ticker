@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -63,7 +64,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun TripRoute(container: AppContainer, tripId: String, onBack: () -> Unit, onOpenTrips: () -> Unit) {
@@ -105,6 +105,8 @@ private fun TripScreen(state: TripUiState, vm: TripViewModel, container: AppCont
     }
 
     val trip = state.trip
+    val locale = LocalConfiguration.current.locales[0]
+    val dayFormat = remember(locale) { DateTimeFormatter.ofPattern("EEE d MMM", locale) }
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(start = 4.dp, end = 8.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             NeonIconButton(TickerIcons.Back, stringResource(R.string.trip_back), onBack, tint = TickerColors.Text)
@@ -143,7 +145,7 @@ private fun TripScreen(state: TripUiState, vm: TripViewModel, container: AppCont
             state.days.forEach { day ->
                 item(key = "d" + day.date) {
                     Text(
-                        DateTimeFormatter.ofPattern("EEE d MMM", Locale.getDefault()).format(day.date),
+                        dayFormat.format(day.date),
                         Modifier.padding(start = 4.dp, top = 10.dp), color = TickerColors.Dim, style = MaterialTheme.typography.labelMedium,
                     )
                 }

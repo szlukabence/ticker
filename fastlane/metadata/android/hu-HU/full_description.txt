@@ -20,6 +20,14 @@ A Ticker ingyenes valutaátváltó, reklámok, fiók és követés nélkül.
 <li>A szövegfelismerés a telefonon fut. A fotókat soha nem tároljuk és nem töltjük fel.</li>
 </ul>
 
+<b>Utazások</b>
+<ul>
+<li>Indíts egy utazást, majd egyetlen koppintással mentsd bele az átváltásokat és a blokkok végösszegét.</li>
+<li>Lásd a végösszeget a saját pénznemedben, a napi átlagot és az opcionális keretből megmaradt összeget.</li>
+<li>Javítsd a tételt azzal, amennyit a bank ténylegesen terhelt.</li>
+<li>Exportáld az utazást CSV-ként, az összes utazást pedig fájlként mentheted és állíthatod vissza. Minden a telefonodon marad.</li>
+</ul>
+
 <b>Mindenhol máshol</b>
 <ul>
 <li>Jelölj ki egy árat bármelyik alkalmazásban, és válaszd az „Átváltás” menüpontot a szövegmenüben.</li>

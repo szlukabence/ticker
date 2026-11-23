@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -81,16 +82,15 @@ fun SavedLine(note: SavedNote?, onUndo: () -> Unit, modifier: Modifier = Modifie
                 color = TickerColors.Dim, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
             )
             Spacer(Modifier.padding(start = 8.dp))
-            Text(
-                stringResource(R.string.trip_undo),
-                Modifier.heightIn(min = 40.dp).clickable(role = Role.Button, onClick = onUndo).padding(horizontal = 8.dp).wrapContentHeightCentered(),
-                color = TickerColors.Accent, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold,
-            )
+            Box(Modifier.heightIn(min = 40.dp).clickable(role = Role.Button, onClick = onUndo).padding(horizontal = 8.dp), contentAlignment = Alignment.Center) {
+                Text(
+                    stringResource(R.string.trip_undo),
+                    color = TickerColors.Accent, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold,
+                )
+            }
         }
     }
 }
-
-private fun Modifier.wrapContentHeightCentered(): Modifier = this.then(Modifier.padding(vertical = 10.dp))
 
 /** True when the phone's animator scale is 0 (Remove animations), so slides should not play. */
 @Composable
