@@ -1,0 +1,1 @@
+New Quick Settings tile to open Ticker, and long-press shortcuts for Scan price and Charts.

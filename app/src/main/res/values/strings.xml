@@ -5,4 +5,5 @@
     <string name="shortcut_scan_long">Scan a price with the camera</string>
     <string name="shortcut_charts_short">Charts</string>
     <string name="shortcut_charts_long">Open rate charts</string>
+    <string name="tile_label">Ticker</string>
 </resources>
