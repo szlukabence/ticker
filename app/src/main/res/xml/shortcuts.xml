@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="scan"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_scan"
+        android:shortcutShortLabel="@string/shortcut_scan_short"
+        android:shortcutLongLabel="@string/shortcut_scan_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="io.github.szlukabence.ticker"
+            android:targetClass="dev.ticker.converter.MainActivity">
+            <extra android:name="dev.ticker.converter.TAB" android:value="camera" />
+        </intent>
+    </shortcut>
+    <shortcut
+        android:shortcutId="charts"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_charts"
+        android:shortcutShortLabel="@string/shortcut_charts_short"
+        android:shortcutLongLabel="@string/shortcut_charts_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="io.github.szlukabence.ticker"
+            android:targetClass="dev.ticker.converter.MainActivity">
+            <extra android:name="dev.ticker.converter.TAB" android:value="charts" />
+        </intent>
+    </shortcut>
+</shortcuts>

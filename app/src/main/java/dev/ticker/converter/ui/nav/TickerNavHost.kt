@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -26,8 +27,11 @@ import dev.ticker.converter.ui.theme.SystemBarsFor
 import dev.ticker.converter.ui.theme.TickerTheme
 import dev.ticker.converter.ui.theme.dotGrid
 
+/** A request to show [tab]; [seq] changes on every intent so asking for the same tab twice still navigates. */
+data class LaunchRequest(val tab: Tab, val seq: Int)
+
 @Composable
-fun TickerNavHost(container: AppContainer, appDark: Boolean, activity: ComponentActivity) {
+fun TickerNavHost(container: AppContainer, appDark: Boolean, activity: ComponentActivity, launchTab: LaunchRequest? = null) {
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
     val current = Tab.entries.firstOrNull { it.route == entry?.destination?.route } ?: Tab.CONVERT
@@ -38,6 +42,7 @@ fun TickerNavHost(container: AppContainer, appDark: Boolean, activity: Component
             restoreState = true
         }
     }
+    LaunchedEffect(launchTab) { launchTab?.let { select(it.tab) } }
     // Camera controls sit on the live picture, so the Camera tab (dock included) is always dark.
     val dark = appDark || current == Tab.CAMERA
     SystemBarsFor(activity, dark)

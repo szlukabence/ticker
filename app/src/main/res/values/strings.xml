@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="widget_description">Your favourite rates</string>
+    <string name="shortcut_scan_short">Scan price</string>
+    <string name="shortcut_scan_long">Scan a price with the camera</string>
+    <string name="shortcut_charts_short">Charts</string>
+    <string name="shortcut_charts_long">Open rate charts</string>
 </resources>

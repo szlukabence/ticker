@@ -30,7 +30,12 @@ import dev.ticker.converter.ui.theme.glow
 enum class Tab(val route: String, val label: String, val icon: ImageVector) {
     CONVERT("convert", "Convert", TickerIcons.Convert),
     CHARTS("charts", "Charts", TickerIcons.Charts),
-    CAMERA("camera", "Camera", TickerIcons.Camera),
+    CAMERA("camera", "Camera", TickerIcons.Camera);
+
+    companion object {
+        /** The tab a launch intent asks for; anything unknown (or missing) opens Convert. */
+        fun fromLaunchExtra(value: String?): Tab = entries.firstOrNull { it.route == value } ?: CONVERT
+    }
 }
 
 private val DockShape = RoundedCornerShape(28.dp)
