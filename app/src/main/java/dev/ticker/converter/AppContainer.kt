@@ -14,6 +14,9 @@ import dev.ticker.converter.data.remote.Network
 import dev.ticker.converter.data.remote.RetrofitEcbSource
 import dev.ticker.converter.data.repo.HistoryRepository
 import dev.ticker.converter.data.repo.RatesRepository
+import dev.ticker.converter.trips.TripsRepository
+import dev.ticker.converter.trips.data.RoomTripsStore
+import dev.ticker.converter.trips.data.TripsDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -28,7 +31,7 @@ data class CameraHandoff(val code: String, val amount: BigDecimal)
 class AppContainer(app: Application) {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val db = TickerDatabase.create(app)
-    private val clock = Clock.systemUTC()
+    val clock: Clock = Clock.systemUTC()
 
     private val ecb = RetrofitEcbSource(Network.frankfurter())
     private val fawaz = HttpFawazSource(Network.okHttp(), Network.json())
@@ -40,5 +43,6 @@ class AppContainer(app: Application) {
     init { dev.ticker.converter.core.SystemLocale.init(app) }
     val formatter: AmountFormatter = AmountFormatter.forLocale(systemLocale())
     val decimalSeparator: Char = java.text.DecimalFormatSymbols.getInstance(systemLocale()).decimalSeparator
+    val trips = TripsRepository(RoomTripsStore(TripsDatabase.create(app).dao()), clock)
     val handoff = HandoffQueue()
 }
