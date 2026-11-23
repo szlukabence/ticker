@@ -9,6 +9,12 @@ android {
     namespace = "dev.ticker.converter"
     compileSdk = 37
 
+    androidResources {
+        // Lists the app's languages for Android 13+'s per-app language setting.
+        generateLocaleConfig = true
+        localeFilters += listOf("en", "hu")
+    }
+
     defaultConfig {
         applicationId = "io.github.szlukabence.ticker"
         minSdk = 26
