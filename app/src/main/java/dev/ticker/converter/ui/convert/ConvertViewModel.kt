@@ -9,6 +9,17 @@ import dev.ticker.converter.core.math.Converter
 import dev.ticker.converter.core.math.Fee
 import dev.ticker.converter.core.math.ExpressionEvaluator
 import dev.ticker.converter.core.model.Currency
+import dev.ticker.converter.core.model.RateSnapshot
+import dev.ticker.converter.trips.EntryFactory
+import dev.ticker.converter.trips.EntryResult
+import dev.ticker.converter.trips.EntrySource
+import dev.ticker.converter.trips.Reason
+import dev.ticker.converter.trips.Trip
+import dev.ticker.converter.trips.TripsRepository
+import dev.ticker.converter.ui.trips.SavedNote
+import dev.ticker.converter.ui.trips.SavedNoteTimer
+import dev.ticker.converter.ui.trips.TripChipUi
+import java.time.Clock
 import dev.ticker.converter.core.model.CurrencyKind
 import dev.ticker.converter.core.model.Settings
 import dev.ticker.converter.core.model.ThemeMode
@@ -43,6 +54,11 @@ data class ConvertUiState(
     val feeOn: Boolean = false,
     val feeBps: Int = 200,
     val theme: ThemeMode = ThemeMode.SYSTEM,
+    /** The active trip, or null; Add and the chip's name come from it. */
+    val trip: TripChipUi? = null,
+    /** Why Add can't save right now; null means it can. */
+    val addBlocked: Reason? = null,
+    val saved: SavedNote? = null,
 )
 
 class ConvertViewModel(
@@ -52,16 +68,23 @@ class ConvertViewModel(
     private val formatter: AmountFormatter,
     handoff: Flow<CameraHandoff>,
     private val decimalSeparator: Char,
+    private val trips: TripsRepository,
+    private val clock: Clock,
 ) : ViewModel() {
 
     /** In-memory mirror of settings so typing never waits for disk; every change is also persisted. */
     private val local = MutableStateFlow<Settings?>(null)
     private val editing = MutableStateFlow(false)
     private val visible = MutableStateFlow(false)
+    private val timer = SavedNoteTimer(viewModelScope)
+
+    private data class Extras(val editing: Boolean, val trip: Trip?, val saved: SavedNote?)
+
+    private val extras = combine(editing, trips.active, timer.note) { e, t, n -> Extras(e, t, n) }
 
     val state: StateFlow<ConvertUiState> =
-        combine(local.filterNotNull(), rates.snapshot, rates.status, editing) { s, snap, status, edit ->
-            buildState(s, snap, status, edit)
+        combine(local.filterNotNull(), rates.snapshot, rates.status, extras) { s, snap, status, x ->
+            buildState(s, snap, status, x)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ConvertUiState(decimalLabel = decimalSeparator))
 
     init {
@@ -138,6 +161,24 @@ class ConvertViewModel(
 
     fun setVisible(v: Boolean) { visible.value = v }
 
+    /** Saves the active row's amount to the active trip in one tap, then shows the undo line. */
+    fun onAddToTrip() {
+        val s = local.value ?: return
+        viewModelScope.launch {
+            val trip = trips.active.first() ?: return@launch
+            val entry = (entryResult(s, trip, rates.snapshot.value) as? EntryResult.Ok)?.entry ?: return@launch
+            trips.add(entry)
+            timer.show(SavedNote(entry.id, trip.name))
+        }
+    }
+
+    /** Deletes exactly the entry the saved line names, so several quick Adds never undo the wrong one. */
+    fun onUndoAdd() {
+        val id = timer.note.value?.entryId ?: return
+        timer.clear()
+        viewModelScope.launch { trips.deleteEntry(id) }
+    }
+
     // ---- internals ----------------------------------------------------------------------
 
     private fun receiveHandoff(h: CameraHandoff) {
@@ -180,7 +221,17 @@ class ConvertViewModel(
         return if (plain.startsWith("-")) "−" + plain.drop(1) else plain
     }
 
-    private fun buildState(s: Settings, snap: dev.ticker.converter.core.model.RateSnapshot?, status: SyncStatus, edit: Boolean): ConvertUiState {
+    private fun entryResult(s: Settings, trip: Trip, snap: RateSnapshot?): EntryResult {
+        val code = s.activeCode ?: s.favorites.firstOrNull().orEmpty()
+        return EntryFactory.fromConversion(
+            amount = activeValue(s) ?: BigDecimal.ZERO, code = code, trip = trip,
+            homeDecimals = catalog.get(trip.homeCode)?.decimals ?: 2, snap = snap,
+            feeOn = s.feeOn, feeBps = s.feeBps, payment = s.lastPayment, source = EntrySource.CONVERT, now = clock.instant(),
+        )
+    }
+
+    private fun buildState(s: Settings, snap: RateSnapshot?, status: SyncStatus, x: Extras): ConvertUiState {
+        val edit = x.editing
         val active = s.activeCode ?: s.favorites.firstOrNull().orEmpty()
         val value = activeValue(s)
         val hasOp = s.expression.drop(1).any { it in ExpressionEvaluator.OPS } ||
@@ -212,6 +263,9 @@ class ConvertViewModel(
             feeOn = s.feeOn,
             feeBps = s.feeBps,
             theme = s.theme,
+            trip = x.trip?.let { TripChipUi(it.id, it.name) },
+            addBlocked = x.trip?.let { (entryResult(s, it, snap) as? EntryResult.Unavailable)?.reason },
+            saved = x.saved,
         )
     }
 }

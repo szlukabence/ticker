@@ -15,11 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.ticker.converter.ui.theme.TickerColors
@@ -52,19 +54,33 @@ fun NeonIconButton(
 
 /** Pill with a green outline, for text actions such as RETRY or DONE. */
 @Composable
-fun NeonPillButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, icon: ImageVector? = null) {
+fun NeonPillButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    /** Long text is cut with an ellipsis instead of widening the pill. */
+    maxLines: Int = Int.MAX_VALUE,
+    /** Tighter padding, for buttons that share a row. */
+    compact: Boolean = false,
+) {
     val shape = RoundedCornerShape(50)
     Row(
         modifier
+            .alpha(if (enabled) 1f else 0.4f)
             .clip(shape)
             .border(1.dp, TickerColors.Accent.copy(alpha = 0.6f), shape)
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .padding(horizontal = if (compact) 12.dp else 16.dp, vertical = if (compact) 8.dp else 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
             Icon(icon, contentDescription = null, tint = TickerColors.Accent, modifier = Modifier.padding(end = 6.dp).size(18.dp))
         }
-        Text(text, color = TickerColors.Accent, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+        Text(
+            text, color = TickerColors.Accent, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold,
+            maxLines = maxLines, overflow = TextOverflow.Ellipsis,
+        )
     }
 }

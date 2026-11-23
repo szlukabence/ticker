@@ -58,7 +58,10 @@ fun TickerNavHost(container: AppContainer, appDark: Boolean, activity: Component
                 bottomBar = { BottomBar(current, select) },
             ) { padding ->
                 NavHost(nav, startDestination = Tab.CONVERT.route, modifier = Modifier.padding(padding)) {
-                    composable(Tab.CONVERT.route) { ConvertRoute(container) }
+                    composable(Tab.CONVERT.route) { ConvertRoute(container, onOpenTrip = { nav.navigate("trip/$it") }) }
+                    // Placeholders until the trip screens arrive.
+                    composable("trip/{id}") { Box(Modifier.fillMaxSize()) }
+                    composable("trips") { Box(Modifier.fillMaxSize()) }
                     composable(Tab.CHARTS.route) { ChartsRoute(container) }
                     composable(Tab.CAMERA.route) { CameraRoute(container, onOpenConvert = { select(Tab.CONVERT) }) }
                 }

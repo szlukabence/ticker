@@ -49,15 +49,24 @@ import dev.ticker.converter.ui.components.ThemeButton
 import dev.ticker.converter.ui.theme.TickerColors
 import dev.ticker.converter.ui.theme.TickerIcons
 import dev.ticker.converter.ui.theme.tile
+import dev.ticker.converter.core.systemLocale
+import dev.ticker.converter.trips.Reason
+import dev.ticker.converter.ui.trips.SavedLine
+import dev.ticker.converter.ui.trips.TripAddButton
+import dev.ticker.converter.ui.trips.TripChip
+import dev.ticker.converter.ui.trips.TripEditorDialog
+import dev.ticker.converter.ui.trips.TripEditorViewModel
+import androidx.compose.ui.text.style.TextOverflow
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
-fun ConvertRoute(container: AppContainer) {
+fun ConvertRoute(container: AppContainer, onOpenTrip: (String) -> Unit = {}) {
     val vm: ConvertViewModel = viewModel {
         ConvertViewModel(
             container.rates, container.settings, container.catalog,
             container.formatter, container.handoff.flow, container.decimalSeparator,
+            container.trips, container.clock,
         )
     }
     LifecycleResumeEffect(vm) {
@@ -65,13 +74,14 @@ fun ConvertRoute(container: AppContainer) {
         onPauseOrDispose { vm.setVisible(false) }
     }
     val state by vm.state.collectAsStateWithLifecycle()
-    ConvertScreen(state, vm, container)
+    ConvertScreen(state, vm, container, onOpenTrip)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container: AppContainer) {
+private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container: AppContainer, onOpenTrip: (String) -> Unit) {
     var picking by remember { mutableStateOf(false) }
+    var tripEditor by remember { mutableStateOf(0) } // 0 = closed; each open gets a fresh editor
     var feeSheet by remember { mutableStateOf(false) }
     var about by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
@@ -88,12 +98,24 @@ private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container
                 NeonIconButton(TickerIcons.Info, stringResource(R.string.convert_about), { about = true })
             }
         }
-        Row(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-            SyncBadge(state.status)
-            if (state.feeOn) {
-                Text("  ·  " + stringResource(R.string.incl_fee, Fee.label(state.feeBps)), color = TickerColors.Dim, style = MaterialTheme.typography.labelMedium)
+        Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                SyncBadge(state.status)
+                if (state.feeOn) {
+                    Text(
+                        "  ·  " + stringResource(R.string.incl_fee, Fee.label(state.feeBps)), color = TickerColors.Dim,
+                        style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            if (!state.editing) {
+                if (state.trip != null && state.addBlocked != Reason.ZERO_AMOUNT) {
+                    TripAddButton(state.addBlocked, vm::onAddToTrip, Modifier.padding(end = 6.dp))
+                }
+                TripChip(state.trip, { tripEditor = tripEditor + 1 }, { state.trip?.let { onOpenTrip(it.id) } })
             }
         }
+        SavedLine(state.saved, vm::onUndoAdd, Modifier.padding(bottom = 4.dp))
 
         val listState = rememberLazyListState()
         val reorder = rememberReorderableLazyListState(listState) { from, to -> vm.onMove(from.key as String, to.key as String) }
@@ -149,6 +171,12 @@ private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container
     }
     if (about) {
         AboutScreen { about = false }
+    }
+    if (tripEditor > 0) {
+        val editor: TripEditorViewModel = viewModel(key = "trip-editor-$tripEditor") {
+            TripEditorViewModel(container.trips, container.catalog, container.catalog.defaultFavorites(systemLocale()).first(), null)
+        }
+        TripEditorDialog(editor, container.catalog, onDismiss = { tripEditor = 0 }, onDone = { tripEditor = 0 })
     }
     if (feeSheet) {
         FeeSheet(state.feeBps, vm::onSetFee) { feeSheet = false }

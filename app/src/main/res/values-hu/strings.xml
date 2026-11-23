@@ -135,4 +135,29 @@
         <item quantity="one">%d napja</item>
         <item quantity="other">%d napja</item>
     </plurals>
+
+    <string name="trip_chip_new">+ Utazás</string>
+    <string name="trip_chip_active">● %1$s</string>
+    <string name="trip_chip_new_desc">Utazás indítása</string>
+    <string name="trip_chip_open_desc">%1$s utazás megnyitása</string>
+    <string name="trip_add">+ Hozzáadás</string>
+    <string name="trip_add_desc">Összeg hozzáadása az utazáshoz</string>
+    <string name="trip_add_blocked_no_rates">Még nem adható hozzá: nincsenek árfolyamok</string>
+    <string name="trip_add_blocked_no_pair">Nem adható hozzá: ehhez a pénznemhez nincs árfolyam</string>
+    <string name="trip_add_blocked_zero">Írj be egy összeget</string>
+    <string name="trip_saved">Mentve ide: %1$s</string>
+    <string name="trip_undo">Visszavonás</string>
+    <string name="trip_editor_new">Új utazás</string>
+    <string name="trip_editor_edit">Utazás szerkesztése</string>
+    <string name="trip_name_label">Az utazás neve</string>
+    <string name="trip_home_label">Saját pénznem</string>
+    <string name="trip_budget_label">Keret (nem kötelező)</string>
+    <string name="trip_start">Utazás indítása</string>
+    <string name="trip_save">Mentés</string>
+    <string name="trip_cancel">Mégse</string>
+    <string name="trip_error_name">Adj meg egy nevet</string>
+    <string name="trip_error_budget">Adj meg nullánál nagyobb keretet, vagy hagyd üresen</string>
+    <string name="trip_home_locked">A pénznem nem módosítható, ha már vannak tételek</string>
+    <string name="trip_conflict">A(z) %1$s még tart.</string>
+    <string name="trip_end_and_start">%1$s lezárása és indítás</string>
 </resources>

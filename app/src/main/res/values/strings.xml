@@ -166,4 +166,29 @@
         <item quantity="one">%dd ago</item>
         <item quantity="other">%dd ago</item>
     </plurals>
+
+    <string name="trip_chip_new">+ Trip</string>
+    <string name="trip_chip_active">● %1$s</string>
+    <string name="trip_chip_new_desc">Start a trip</string>
+    <string name="trip_chip_open_desc">Open trip %1$s</string>
+    <string name="trip_add">+ Add</string>
+    <string name="trip_add_desc">Add this amount to the trip</string>
+    <string name="trip_add_blocked_no_rates">Can\'t add yet: no exchange rates</string>
+    <string name="trip_add_blocked_no_pair">Can\'t add: no rate for this currency</string>
+    <string name="trip_add_blocked_zero">Type an amount to add</string>
+    <string name="trip_saved">Saved to %1$s</string>
+    <string name="trip_undo">Undo</string>
+    <string name="trip_editor_new">New trip</string>
+    <string name="trip_editor_edit">Edit trip</string>
+    <string name="trip_name_label">Trip name</string>
+    <string name="trip_home_label">Home currency</string>
+    <string name="trip_budget_label">Budget (optional)</string>
+    <string name="trip_start">Start trip</string>
+    <string name="trip_save">Save</string>
+    <string name="trip_cancel">Cancel</string>
+    <string name="trip_error_name">Enter a name</string>
+    <string name="trip_error_budget">Enter a budget above zero, or leave it empty</string>
+    <string name="trip_home_locked">The currency can\'t change once a trip has entries</string>
+    <string name="trip_conflict">%1$s is still running.</string>
+    <string name="trip_end_and_start">End %1$s and start</string>
 </resources>

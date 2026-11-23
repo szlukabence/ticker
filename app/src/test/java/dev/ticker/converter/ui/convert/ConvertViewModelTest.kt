@@ -9,11 +9,18 @@ import dev.ticker.converter.data.repo.RatesRepository
 import dev.ticker.converter.fakes.FakeEcb
 import dev.ticker.converter.fakes.FakeFawaz
 import dev.ticker.converter.fakes.FakeSettingsRepository
+import dev.ticker.converter.fakes.FakeTripsStore
+import dev.ticker.converter.trips.EntrySource
+import dev.ticker.converter.trips.Reason
+import dev.ticker.converter.trips.TripsRepository
+import dev.ticker.converter.core.model.Payment
 import dev.ticker.converter.fakes.InMemorySnapshotStore
 import dev.ticker.converter.fakes.MutableClock
 import dev.ticker.converter.fakes.testCatalog
 import dev.ticker.converter.fixtures.Fixtures
 import dev.ticker.converter.ui.components.Key
+import dev.ticker.converter.ui.trips.SavedNote
+import dev.ticker.converter.ui.trips.TripChipUi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
@@ -36,6 +43,11 @@ class ConvertViewModelTest {
     private val formatter = AmountFormatter('.')
     private val handoff = MutableSharedFlow<CameraHandoff>(extraBufferCapacity = 1)
 
+    private val tripStore = FakeTripsStore()
+    private val clock = MutableClock(Fixtures.T0)
+    private var idN = 0
+    private val tripRepo = TripsRepository(tripStore, clock) { "id${++idN}" }
+
     private suspend fun TestScope.vm(
         settings: FakeSettingsRepository = FakeSettingsRepository(),
         decimal: Char = '.',
@@ -44,7 +56,7 @@ class ConvertViewModelTest {
         val store = InMemorySnapshotStore(if (snapshot) Fixtures.snapshot else null)
         val rates = RatesRepository(FakeEcb(), FakeFawaz(), store, catalog, MutableClock(Fixtures.T0), main.dispatcher)
         rates.loadCached()
-        val vm = ConvertViewModel(rates, settings, catalog, AmountFormatter(decimal), handoff, decimal)
+        val vm = ConvertViewModel(rates, settings, catalog, AmountFormatter(decimal), handoff, decimal, tripRepo, clock)
         backgroundScope.launch { vm.state.collect {} }
         testScheduler.advanceUntilIdle()
         return vm
@@ -263,7 +275,7 @@ class ConvertViewModelTest {
         val inner = seeded()
         val rates = RatesRepository(FakeEcb(), FakeFawaz(), InMemorySnapshotStore(Fixtures.snapshot), catalog, MutableClock(Fixtures.T0), main.dispatcher)
         rates.loadCached()
-        val vm = ConvertViewModel(rates, SlowFirstRead(inner), catalog, formatter, q.flow, '.')
+        val vm = ConvertViewModel(rates, SlowFirstRead(inner), catalog, formatter, q.flow, '.', tripRepo, clock)
         backgroundScope.launch { vm.state.collect {} }
         testScheduler.advanceTimeBy(500); testScheduler.runCurrent()
         assertEquals("HUF", vm.state.value.activeCode)
@@ -282,5 +294,119 @@ class ConvertViewModelTest {
         assertEquals(dev.ticker.converter.core.model.ThemeMode.LIGHT, s.state.value.theme)
         assertEquals(dev.ticker.converter.core.model.ThemeMode.LIGHT, vm.state.value.theme)
         assertEquals(listOf("EUR", "HUF", "USD", "BTC"), s.state.value.favorites)
+    }
+
+    // ---- trips ----
+
+    private suspend fun startTrip(name: String = "Wien", home: String = "HUF") =
+        (tripRepo.start(name, home, null) as TripsRepository.StartResult.Started).trip
+
+    @Test fun chipShowsActiveTrip() = runTest {
+        val vm = vm(seeded())
+        assertEquals(null, vm.state.value.trip)
+        val t = startTrip()
+        testScheduler.advanceUntilIdle()
+        assertEquals(TripChipUi(t.id, "Wien"), vm.state.value.trip)
+    }
+
+    @Test fun addSavesEntryWithLastPayment() = runTest {
+        val s = FakeSettingsRepository(Settings(favorites = listOf("EUR", "HUF"), activeCode = "EUR", expression = "42.5", initialized = true, feeOn = true, feeBps = 150, lastPayment = Payment.CASH))
+        val vm = vm(s)
+        val t = startTrip()
+        testScheduler.advanceUntilIdle()
+        vm.onAddToTrip()
+        testScheduler.runCurrent()
+        val e = tripStore.allEntries().single()
+        assertEquals(t.id, e.tripId)
+        assertEquals("EUR", e.code)
+        assertEquals(0, BigDecimal("42.5").compareTo(e.amount))
+        assertEquals(Payment.CASH, e.payment)
+        assertEquals(0, e.feeBps)
+        assertEquals(EntrySource.CONVERT, e.source)
+        assertEquals(SavedNote(e.id, "Wien"), vm.state.value.saved)
+    }
+
+    @Test fun addUsesCardFeeWhenCard() = runTest {
+        val s = FakeSettingsRepository(Settings(favorites = listOf("EUR", "HUF"), activeCode = "EUR", expression = "100", initialized = true, feeOn = true, feeBps = 150))
+        val vm = vm(s)
+        startTrip()
+        testScheduler.advanceUntilIdle()
+        vm.onAddToTrip()
+        testScheduler.runCurrent()
+        assertEquals(150, tripStore.allEntries().single().feeBps)
+    }
+
+    @Test fun addBlockedWithoutRates() = runTest {
+        val vm = vm(seeded(), snapshot = false)
+        startTrip()
+        testScheduler.advanceUntilIdle()
+        assertEquals(Reason.NO_RATES, vm.state.value.addBlocked)
+        vm.onAddToTrip()
+        testScheduler.runCurrent()
+        assertTrue(tripStore.allEntries().isEmpty())
+    }
+
+    @Test fun addEnabledWithRates() = runTest {
+        val vm = vm(seeded())
+        startTrip()
+        testScheduler.advanceUntilIdle()
+        assertEquals(null, vm.state.value.addBlocked)
+    }
+
+    @Test fun addHiddenWhenNoTrip() = runTest {
+        val vm = vm(seeded())
+        assertEquals(null, vm.state.value.trip)
+        vm.onAddToTrip()
+        testScheduler.runCurrent()
+        assertTrue(tripStore.allEntries().isEmpty())
+        assertEquals(null, vm.state.value.saved)
+    }
+
+    @Test fun undoDeletesSavedEntry() = runTest {
+        val vm = vm(seeded())
+        startTrip()
+        testScheduler.advanceUntilIdle()
+        vm.onAddToTrip()
+        testScheduler.runCurrent()
+        vm.onUndoAdd()
+        testScheduler.runCurrent()
+        assertTrue(tripStore.allEntries().isEmpty())
+        assertEquals(null, vm.state.value.saved)
+    }
+
+    @Test fun undoAfterTwoAddsDeletesOnlySecond() = runTest {
+        val vm = vm(seeded())
+        startTrip()
+        testScheduler.advanceUntilIdle()
+        vm.onAddToTrip(); testScheduler.runCurrent()
+        val first = tripStore.allEntries().single().id
+        vm.onAddToTrip(); testScheduler.runCurrent()
+        vm.onUndoAdd(); testScheduler.runCurrent()
+        assertEquals(listOf(first), tripStore.allEntries().map { it.id })
+    }
+
+    @Test fun savedClearsAfter4s() = runTest {
+        val vm = vm(seeded())
+        startTrip()
+        testScheduler.advanceUntilIdle()
+        vm.onAddToTrip(); testScheduler.runCurrent()
+        assertTrue(vm.state.value.saved != null)
+        testScheduler.advanceTimeBy(3_900); testScheduler.runCurrent()
+        assertTrue(vm.state.value.saved != null)
+        testScheduler.advanceTimeBy(200); testScheduler.runCurrent()
+        assertEquals(null, vm.state.value.saved)
+    }
+
+    @Test fun secondAddRestartsTimer() = runTest {
+        val vm = vm(seeded())
+        startTrip()
+        testScheduler.advanceUntilIdle()
+        vm.onAddToTrip(); testScheduler.runCurrent()
+        testScheduler.advanceTimeBy(3_000); testScheduler.runCurrent()
+        vm.onAddToTrip(); testScheduler.runCurrent()
+        testScheduler.advanceTimeBy(3_000); testScheduler.runCurrent()
+        assertTrue("second Add must keep the line up for a full 4 s", vm.state.value.saved != null)
+        testScheduler.advanceTimeBy(1_100); testScheduler.runCurrent()
+        assertEquals(null, vm.state.value.saved)
     }
 }
