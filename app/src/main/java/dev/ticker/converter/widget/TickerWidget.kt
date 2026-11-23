@@ -31,10 +31,11 @@ import androidx.glance.text.FontFamily
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
+import androidx.glance.color.ColorProvider
 import androidx.glance.unit.ColorProvider
 import dev.ticker.converter.MainActivity
 import dev.ticker.converter.TickerApp
-import dev.ticker.converter.ui.theme.DarkPalette
+import dev.ticker.converter.core.model.ThemeMode
 import java.time.Instant
 import java.time.ZoneId
 
@@ -53,12 +54,18 @@ class TickerWidget : GlanceAppWidget() {
             val ui = settings?.let {
                 WidgetModel.build(it, snap, Instant.now(), ZoneId.systemDefault(), container.catalog, container.formatter)
             } ?: WidgetUi.NoRates
-            Content(ui)
+            Content(ui, WidgetTheme.colors(settings?.theme ?: ThemeMode.SYSTEM))
         }
     }
 
     @Composable
-    private fun Content(ui: WidgetUi) {
+    private fun Content(ui: WidgetUi, colors: WidgetColors) {
+        val bg = colors.provider { it.bg }
+        val accent = colors.provider { it.accent }
+        val text = colors.provider { it.text }
+        val dim = colors.provider { it.dim }
+        val negative = colors.provider { it.negative }
+        val warning = colors.provider { it.warning }
         val size = LocalSize.current
         val maxRows = when {
             size.height >= TALL.height -> 6
@@ -66,35 +73,35 @@ class TickerWidget : GlanceAppWidget() {
             else -> 2
         }
         Column(
-            GlanceModifier.fillMaxSize().background(Color.Black).cornerRadius(22.dp)
+            GlanceModifier.fillMaxSize().background(bg).cornerRadius(22.dp)
                 .clickable(actionStartActivity<MainActivity>()).padding(horizontal = 14.dp, vertical = 10.dp),
         ) {
             when (ui) {
-                WidgetUi.NoRates -> Message("Open Ticker to load rates")
-                WidgetUi.NeedFavourites -> Message("Add favourites in Ticker")
+                WidgetUi.NoRates -> Message("Open Ticker to load rates", accent, dim)
+                WidgetUi.NeedFavourites -> Message("Add favourites in Ticker", accent, dim)
                 is WidgetUi.Rates -> {
                     Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Text("${ui.baseGlyph} 1 ${ui.baseCode}", style = TextStyle(color = ACCENT, fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace))
+                        Text("${ui.baseGlyph} 1 ${ui.baseCode}", style = TextStyle(color = accent, fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace))
                         Spacer(GlanceModifier.defaultWeight())
-                        Text(ui.updated, style = TextStyle(color = if (ui.stale) WARNING else DIM, fontSize = 11.sp, fontFamily = FontFamily.Monospace))
+                        Text(ui.updated, style = TextStyle(color = if (ui.stale) warning else dim, fontSize = 11.sp, fontFamily = FontFamily.Monospace))
                     }
-                    ui.feeLabel?.let { Text("incl. $it fee", style = TextStyle(color = DIM, fontSize = 10.sp, fontFamily = FontFamily.Monospace)) }
+                    ui.feeLabel?.let { Text("incl. $it fee", style = TextStyle(color = dim, fontSize = 10.sp, fontFamily = FontFamily.Monospace)) }
                     Spacer(GlanceModifier.height(4.dp))
                     ui.rows.take(maxRows).forEach { row ->
                         Row(GlanceModifier.fillMaxWidth().padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text(row.code, style = TextStyle(color = TEXT, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace))
+                            Text(row.code, style = TextStyle(color = text, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace))
                             Spacer(GlanceModifier.width(8.dp))
                             Text(
                                 row.amount,
                                 GlanceModifier.defaultWeight(),
-                                style = TextStyle(color = TEXT, fontSize = 15.sp, fontFamily = FontFamily.Monospace, textAlign = androidx.glance.text.TextAlign.End),
+                                style = TextStyle(color = text, fontSize = 15.sp, fontFamily = FontFamily.Monospace, textAlign = androidx.glance.text.TextAlign.End),
                                 maxLines = 1,
                             )
                             if (size.width >= WIDE_SMALL.width) {
                                 Spacer(GlanceModifier.width(8.dp))
                                 Text(
                                     row.change ?: "",
-                                    style = TextStyle(color = if (row.down) NEGATIVE else ACCENT, fontSize = 10.sp, fontFamily = FontFamily.Monospace),
+                                    style = TextStyle(color = if (row.down) negative else accent, fontSize = 10.sp, fontFamily = FontFamily.Monospace),
                                 )
                             }
                         }
@@ -105,10 +112,10 @@ class TickerWidget : GlanceAppWidget() {
     }
 
     @Composable
-    private fun Message(text: String) {
+    private fun Message(text: String, accent: ColorProvider, dim: ColorProvider) {
         Column(GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically, horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("TICKER", style = TextStyle(color = ACCENT, fontSize = 12.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace))
-            Text(text, style = TextStyle(color = DIM, fontSize = 12.sp, fontFamily = FontFamily.Monospace))
+            Text("TICKER", style = TextStyle(color = accent, fontSize = 12.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace))
+            Text(text, style = TextStyle(color = dim, fontSize = 12.sp, fontFamily = FontFamily.Monospace))
         }
     }
 
@@ -119,11 +126,8 @@ class TickerWidget : GlanceAppWidget() {
         val WIDE_SMALL = DpSize(180.dp, 50.dp)
         val WIDE_MEDIUM = DpSize(180.dp, 110.dp)
         val WIDE_TALL = DpSize(180.dp, 180.dp)
-        // The widget keeps the dark Neon look whatever the app theme is.
-        val ACCENT = ColorProvider(DarkPalette.accent)
-        val TEXT = ColorProvider(DarkPalette.text)
-        val DIM = ColorProvider(DarkPalette.dim)
-        val NEGATIVE = ColorProvider(DarkPalette.negative)
-        val WARNING = ColorProvider(DarkPalette.warning)
     }
 }
+
+fun WidgetColors.provider(pick: (WidgetRoles) -> Color): ColorProvider =
+    if (dayNight) ColorProvider(day = pick(light), night = pick(dark)) else ColorProvider(pick(light))

@@ -34,7 +34,7 @@ object WidgetModel {
     private val TIME: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
     /** Everything the widget shows depends on; equal keys mean no redraw is needed. */
-    fun redrawKey(s: Settings, snap: RateSnapshot?): Any = listOf(s.favorites, s.feeOn, s.feeBps, snap?.fetchedAt)
+    fun redrawKey(s: Settings, snap: RateSnapshot?): Any = listOf(s.favorites, s.feeOn, s.feeBps, s.theme, snap?.fetchedAt)
 
     /** 1 unit of the first favourite in each other favourite; all rows, the widget trims to its size. */
     fun build(

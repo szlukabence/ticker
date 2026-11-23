@@ -2,4 +2,6 @@
 <resources>
     <!-- Shown for the moment before the first frame; matches the light palette's background. -->
     <color name="ticker_window">#FFF6F7F5</color>
+    <color name="widget_bg">#FFFFFFFF</color>
+    <color name="widget_text">#FF151917</color>
 </resources>

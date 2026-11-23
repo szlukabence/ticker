@@ -79,4 +79,9 @@ class WidgetModelTest {
         assertTrue(k != WidgetModel.redrawKey(favs, Fixtures.snapshot.copy(fetchedAt = fetched.plusSeconds(60))))
         assertTrue(k != WidgetModel.redrawKey(favs, null))
     }
+
+    @Test fun redrawKeyChangesWithTheme() {
+        val snap = Fixtures.snapshot
+        assertTrue(WidgetModel.redrawKey(favs, snap) != WidgetModel.redrawKey(favs.copy(theme = dev.ticker.converter.core.model.ThemeMode.LIGHT), snap))
+    }
 }
