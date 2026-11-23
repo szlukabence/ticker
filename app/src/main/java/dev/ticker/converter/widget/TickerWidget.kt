@@ -1,5 +1,7 @@
 package dev.ticker.converter.widget
 
+import dev.ticker.converter.R
+import androidx.glance.LocalContext
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -67,6 +69,7 @@ class TickerWidget : GlanceAppWidget() {
         val negative = colors.provider { it.negative }
         val warning = colors.provider { it.warning }
         val size = LocalSize.current
+        val context = LocalContext.current
         val maxRows = when {
             size.height >= TALL.height -> 6
             size.height >= MEDIUM.height -> 4
@@ -77,15 +80,15 @@ class TickerWidget : GlanceAppWidget() {
                 .clickable(actionStartActivity<MainActivity>()).padding(horizontal = 14.dp, vertical = 10.dp),
         ) {
             when (ui) {
-                WidgetUi.NoRates -> Message("Open Ticker to load rates", accent, dim)
-                WidgetUi.NeedFavourites -> Message("Add favourites in Ticker", accent, dim)
+                WidgetUi.NoRates -> Message(context.getString(R.string.widget_open_ticker), accent, dim)
+                WidgetUi.NeedFavourites -> Message(context.getString(R.string.widget_add_favourites), accent, dim)
                 is WidgetUi.Rates -> {
                     Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text("${ui.baseGlyph} 1 ${ui.baseCode}", style = TextStyle(color = accent, fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace))
                         Spacer(GlanceModifier.defaultWeight())
                         Text(ui.updated, style = TextStyle(color = if (ui.stale) warning else dim, fontSize = 11.sp, fontFamily = FontFamily.Monospace))
                     }
-                    ui.feeLabel?.let { Text("incl. $it fee", style = TextStyle(color = dim, fontSize = 10.sp, fontFamily = FontFamily.Monospace)) }
+                    ui.feeLabel?.let { Text(context.getString(R.string.incl_fee, it), style = TextStyle(color = dim, fontSize = 10.sp, fontFamily = FontFamily.Monospace)) }
                     Spacer(GlanceModifier.height(4.dp))
                     ui.rows.take(maxRows).forEach { row ->
                         Row(GlanceModifier.fillMaxWidth().padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {

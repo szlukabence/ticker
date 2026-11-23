@@ -1,5 +1,8 @@
 package dev.ticker.converter.ui.components
 
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,10 +22,11 @@ import dev.ticker.converter.core.model.ThemeMode
 import dev.ticker.converter.ui.theme.TickerColors
 import dev.ticker.converter.ui.theme.TickerIcons
 
+@StringRes
 private fun ThemeMode.label() = when (this) {
-    ThemeMode.SYSTEM -> "System"
-    ThemeMode.LIGHT -> "Light"
-    ThemeMode.DARK -> "Dark"
+    ThemeMode.SYSTEM -> R.string.theme_system
+    ThemeMode.LIGHT -> R.string.theme_light
+    ThemeMode.DARK -> R.string.theme_dark
 }
 
 private fun ThemeMode.icon() = when (this) {
@@ -36,14 +40,14 @@ private fun ThemeMode.icon() = when (this) {
 fun ThemeButton(current: ThemeMode, onPick: (ThemeMode) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        NeonIconButton(current.icon(), "Theme: ${current.label()}", { open = true })
+        NeonIconButton(current.icon(), stringResource(R.string.theme_button, stringResource(current.label())), { open = true })
         DropdownMenu(expanded = open, onDismissRequest = { open = false }, containerColor = TickerColors.Surface) {
             ThemeMode.entries.forEach { mode ->
                 val on = mode == current
                 DropdownMenuItem(
                     text = {
                         Text(
-                            mode.label(),
+                            stringResource(mode.label()),
                             style = MaterialTheme.typography.bodyMedium,
                             color = if (on) TickerColors.Accent else TickerColors.Text,
                             modifier = Modifier.width(96.dp),
@@ -51,7 +55,7 @@ fun ThemeButton(current: ThemeMode, onPick: (ThemeMode) -> Unit) {
                     },
                     leadingIcon = { Icon(mode.icon(), null, tint = if (on) TickerColors.Accent else TickerColors.Dim, modifier = Modifier.size(20.dp)) },
                     trailingIcon = if (on) {
-                        { Icon(TickerIcons.Check, "Selected", tint = TickerColors.Accent, modifier = Modifier.size(18.dp)) }
+                        { Icon(TickerIcons.Check, stringResource(R.string.common_selected), tint = TickerColors.Accent, modifier = Modifier.size(18.dp)) }
                     } else null,
                     onClick = { open = false; onPick(mode) },
                 )

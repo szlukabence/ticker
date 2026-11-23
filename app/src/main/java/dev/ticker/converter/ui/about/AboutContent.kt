@@ -1,9 +1,12 @@
 package dev.ticker.converter.ui.about
 
+import androidx.annotation.StringRes
+import dev.ticker.converter.R
+
 /** One bundled piece of third-party (or our own) software and the licence text shipped with it. */
 data class Component(val name: String, val licence: String, val licenceAsset: String, val note: String = "")
 
-data class DataSource(val name: String, val detail: String, val url: String)
+data class DataSource(val name: String, @StringRes val detail: Int, val url: String)
 
 /** Everything the About screen says. Kept as data so tests can check the legal notices are complete. */
 object AboutContent {
@@ -12,31 +15,15 @@ object AboutContent {
 
     const val COPYRIGHT = "Copyright © 2026 Bence Szluka"
 
-    const val LEGAL =
-        "Ticker is free software: you can redistribute it and/or modify it under the terms of the GNU " +
-            "General Public License as published by the Free Software Foundation, either version 3 of the " +
-            "License, or (at your option) any later version. Ticker comes with ABSOLUTELY NO WARRANTY; " +
-            "see the licence below for details."
-
-    const val DISCLAIMER =
-        "Rates are reference rates, shown for information only. They are not the rates a bank, card or " +
-            "exchange will give you, and they can be out of date or wrong. The card fee is an estimate. " +
-            "Nothing in Ticker is financial advice; check the real rate before you pay."
-
-    const val PRIVACY =
-        "No account, ads, analytics or tracking. Camera images are read on the phone and never stored or " +
-            "sent. The app only downloads public exchange rates; those servers see your IP address."
-
     val dataSources = listOf(
         DataSource(
             "European Central Bank",
-            "Euro foreign exchange reference rates (source: ECB), fetched through Frankfurter. Cross rates, " +
-                "daily changes and charts are Ticker's own calculations from these rates, not ECB figures.",
+            R.string.about_source_ecb_detail,
             "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/",
         ),
         DataSource(
             "fawazahmed0 currency API",
-            "Other currencies and all crypto prices, updated once a day. Public domain (CC0).",
+            R.string.about_source_fawaz_detail,
             "https://github.com/fawazahmed0/exchange-api",
         ),
     )

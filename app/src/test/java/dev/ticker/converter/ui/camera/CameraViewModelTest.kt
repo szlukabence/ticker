@@ -64,7 +64,7 @@ class CameraViewModelTest {
         val expected = formatter.format(Converter.convert(BigDecimal(1290), "HUF", "EUR", Fixtures.snapshot)!!, Fixtures.EUR)
         assertEquals(expected, vm.state.value.converted)
         assertFalse(vm.state.value.hint)
-        assertEquals("1 290 HUF · tap to open in Convert", vm.state.value.readingText)
+        assertEquals("1 290 HUF", vm.state.value.readingText)
     }
 
     @Test fun shutterLocksReadingAndIgnoresFrames() = runTest {

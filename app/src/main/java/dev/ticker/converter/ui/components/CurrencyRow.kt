@@ -1,5 +1,7 @@
 package dev.ticker.converter.ui.components
 
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -102,7 +104,7 @@ fun CurrencyRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (editing) {
-            Icon(TickerIcons.Drag, contentDescription = "Drag to reorder ${currency.code}", dragHandle.padding(10.dp), tint = TickerColors.Dim)
+            Icon(TickerIcons.Drag, contentDescription = stringResource(R.string.row_drag, currency.code), dragHandle.padding(10.dp), tint = TickerColors.Dim)
         }
         CurrencyGlyph(currency, size = if (big) 46 else 38, active = big)
         Spacer(Modifier.width(12.dp))
@@ -125,7 +127,7 @@ fun CurrencyRow(
                 Modifier.size(44.dp).clickable(enabled = canRemove, onClick = onRemove),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(TickerIcons.Close, "Remove ${currency.code}", tint = if (canRemove) TickerColors.Negative else TickerColors.Divider)
+                Icon(TickerIcons.Close, stringResource(R.string.row_remove, currency.code), tint = if (canRemove) TickerColors.Negative else TickerColors.Divider)
             }
         } else {
             val style = TextStyle(

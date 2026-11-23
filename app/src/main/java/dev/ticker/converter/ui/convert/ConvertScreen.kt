@@ -1,5 +1,7 @@
 package dev.ticker.converter.ui.convert
 
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.clickable
 import dev.ticker.converter.ui.about.AboutScreen
 import androidx.compose.foundation.layout.Arrangement
@@ -74,22 +76,22 @@ private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container
     var about by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("CONVERT", style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.convert_title), style = MaterialTheme.typography.headlineSmall)
             Spacer(Modifier.weight(1f))
             if (state.editing) {
-                NeonPillButton("DONE", vm::onToggleEdit, Modifier.padding(end = 4.dp))
+                NeonPillButton(stringResource(R.string.convert_done), vm::onToggleEdit, Modifier.padding(end = 4.dp))
             } else {
                 FeeChip(state.feeOn, state.feeBps, vm::onToggleFee, { feeSheet = true }, Modifier.padding(end = 4.dp))
-                NeonIconButton(TickerIcons.Edit, "Edit favourites", vm::onToggleEdit)
-                NeonIconButton(TickerIcons.Refresh, "Refresh rates", vm::onRefresh)
+                NeonIconButton(TickerIcons.Edit, stringResource(R.string.convert_edit), vm::onToggleEdit)
+                NeonIconButton(TickerIcons.Refresh, stringResource(R.string.convert_refresh), vm::onRefresh)
                 ThemeButton(state.theme, vm::onTheme)
-                NeonIconButton(TickerIcons.Info, "About Ticker", { about = true })
+                NeonIconButton(TickerIcons.Info, stringResource(R.string.convert_about), { about = true })
             }
         }
         Row(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
             SyncBadge(state.status)
             if (state.feeOn) {
-                Text("  ·  incl. ${Fee.label(state.feeBps)} fee", color = TickerColors.Dim, style = MaterialTheme.typography.labelMedium)
+                Text("  ·  " + stringResource(R.string.incl_fee, Fee.label(state.feeBps)), color = TickerColors.Dim, style = MaterialTheme.typography.labelMedium)
             }
         }
 
@@ -135,7 +137,7 @@ private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container
                         ) {
                             Icon(TickerIcons.Plus, contentDescription = null, tint = TickerColors.Accent)
                             Spacer(Modifier.width(10.dp))
-                            Text("Add currency", color = TickerColors.Accent, style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(R.string.convert_add), color = TickerColors.Accent, style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 }
@@ -164,7 +166,7 @@ private fun ConvertScreen(state: ConvertUiState, vm: ConvertViewModel, container
 @Composable
 private fun NoDataBanner(onRetry: () -> Unit) {
     Column(Modifier.fillMaxWidth().tile().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("Connect to the internet to load rates", color = TickerColors.Warning, style = MaterialTheme.typography.bodyMedium)
-        NeonPillButton("RETRY", onRetry, icon = TickerIcons.Refresh)
+        Text(stringResource(R.string.convert_no_internet), color = TickerColors.Warning, style = MaterialTheme.typography.bodyMedium)
+        NeonPillButton(stringResource(R.string.common_retry), onRetry, icon = TickerIcons.Refresh)
     }
 }

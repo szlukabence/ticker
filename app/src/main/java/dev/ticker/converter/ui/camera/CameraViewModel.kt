@@ -137,7 +137,7 @@ class CameraViewModel(
             from = i.from,
             to = i.to,
             reading = i.reading,
-            readingText = i.reading?.let { "${asRead(it, i.from)} ${i.from.code} · tap to open in Convert" },
+            readingText = i.reading?.let { "${asRead(it, i.from)} ${i.from.code}" },
             converted = i.reading?.let(::conv),
             hint = i.reading == null,
             frozen = i.frozen,

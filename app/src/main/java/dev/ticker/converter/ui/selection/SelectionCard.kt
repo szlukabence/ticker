@@ -1,5 +1,7 @@
 package dev.ticker.converter.ui.selection
 
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -62,7 +64,7 @@ fun SelectionCard(text: String, container: AppContainer, onClose: () -> Unit, on
 
     CompositionLocalProvider(LocalContentColor provides TickerColors.Text) {
         Box(
-            Modifier.fillMaxSize().clickable(interactionSource = null, indication = null, onClickLabel = "Close", onClick = onClose)
+            Modifier.fillMaxSize().clickable(interactionSource = null, indication = null, onClickLabel = stringResource(R.string.common_close), onClick = onClose)
                 .safeDrawingPadding(),
             contentAlignment = Alignment.Center,
         ) {
@@ -79,13 +81,13 @@ fun SelectionCard(text: String, container: AppContainer, onClose: () -> Unit, on
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("CONVERT", style = MaterialTheme.typography.labelSmall, color = TickerColors.Dim, letterSpacing = 1.5.sp)
+                    Text(stringResource(R.string.convert_title), style = MaterialTheme.typography.labelSmall, color = TickerColors.Dim, letterSpacing = 1.5.sp)
                     Spacer(Modifier.weight(1f))
-                    NeonIconButton(TickerIcons.Close, "Close", onClose, tint = TickerColors.Text, size = 40.dp)
+                    NeonIconButton(TickerIcons.Close, stringResource(R.string.common_close), onClose, tint = TickerColors.Text, size = 40.dp)
                 }
                 Row(
                     Modifier.fillMaxWidth().height(64.dp).tile(active = true)
-                        .clickable(onClickLabel = "Change currency") { picking = true }
+                        .clickable(onClickLabel = stringResource(R.string.selection_change)) { picking = true }
                         .padding(horizontal = 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -102,7 +104,7 @@ fun SelectionCard(text: String, container: AppContainer, onClose: () -> Unit, on
                     )
                 }
                 if (state.amount == null) {
-                    Text("No amount in the selected text", Modifier.padding(vertical = 8.dp), color = TickerColors.Dim, style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.selection_no_amount), Modifier.padding(vertical = 8.dp), color = TickerColors.Dim, style = MaterialTheme.typography.bodyMedium)
                 }
                 state.rows.forEach { row ->
                     Row(
@@ -123,9 +125,9 @@ fun SelectionCard(text: String, container: AppContainer, onClose: () -> Unit, on
                 Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         SyncBadge(state.status)
-                        state.feeLabel?.let { Text("incl. $it fee", color = TickerColors.Dim, style = MaterialTheme.typography.labelSmall) }
+                        state.feeLabel?.let { Text(stringResource(R.string.incl_fee, it), color = TickerColors.Dim, style = MaterialTheme.typography.labelSmall) }
                     }
-                    NeonPillButton("OPEN IN TICKER", { vm.openInTicker(); onOpenApp() })
+                    NeonPillButton(stringResource(R.string.selection_open), { vm.openInTicker(); onOpenApp() })
                 }
             }
         }

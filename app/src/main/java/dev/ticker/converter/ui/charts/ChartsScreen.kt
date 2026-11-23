@@ -1,5 +1,9 @@
 package dev.ticker.converter.ui.charts
 
+import java.time.format.FormatStyle
+import androidx.compose.ui.platform.LocalConfiguration
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -74,18 +78,23 @@ private fun ChartsScreen(state: ChartsUiState, vm: ChartsViewModel, container: A
     var picking by remember { mutableStateOf<Picking?>(null) }
     var hint by remember { mutableStateOf(false) }
     LaunchedEffect(hint) { if (hint) { delay(2500); hint = false } }
-    val timeFormat = remember(state.range) {
-        DateTimeFormatter.ofPattern(if (state.range == ChartRange.D1 || state.range == ChartRange.W1) "MMM d HH:mm" else "MMM d, yyyy")
-            .withZone(ZoneId.systemDefault())
+    val locale = LocalConfiguration.current.locales[0]
+    val timeFormat = remember(state.range, locale) {
+        val f = if (state.range == ChartRange.D1 || state.range == ChartRange.W1) {
+            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+        } else {
+            DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+        }
+        f.withLocale(locale).withZone(ZoneId.systemDefault())
     }
 
     Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState())) {
         Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("CHARTS", style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.charts_title), style = MaterialTheme.typography.headlineSmall)
             Spacer(Modifier.weight(1f))
             NeonIconButton(
                 if (state.isSaved) TickerIcons.StarFilled else TickerIcons.Star,
-                if (state.isSaved) "Remove from saved pairs" else "Save pair",
+                stringResource(if (state.isSaved) R.string.charts_unsave else R.string.charts_save),
                 vm::onToggleSave,
                 tint = if (state.isSaved) TickerColors.Accent else TickerColors.Dim,
                 glowing = state.isSaved,
@@ -93,7 +102,7 @@ private fun ChartsScreen(state: ChartsUiState, vm: ChartsViewModel, container: A
         }
         Row(Modifier.padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
             PairChip(state.base) { picking = Picking.BASE }
-            NeonIconButton(TickerIcons.Arrow, "Swap pair", vm::onSwap, tint = TickerColors.Accent)
+            NeonIconButton(TickerIcons.Arrow, stringResource(R.string.charts_swap), vm::onSwap, tint = TickerColors.Accent)
             PairChip(state.quote) { picking = Picking.QUOTE }
         }
         Text(
@@ -111,7 +120,7 @@ private fun ChartsScreen(state: ChartsUiState, vm: ChartsViewModel, container: A
                 style = MaterialTheme.typography.labelMedium.merge(Neon.glowText(c, 20f)))
         }
         if (state.stale) {
-            Text("Couldn't refresh · showing saved data", Modifier.padding(horizontal = 20.dp, vertical = 2.dp),
+            Text(stringResource(R.string.charts_stale), Modifier.padding(horizontal = 20.dp, vertical = 2.dp),
                 color = TickerColors.Warning, style = MaterialTheme.typography.labelSmall)
         }
         Spacer(Modifier.height(10.dp))
@@ -119,8 +128,8 @@ private fun ChartsScreen(state: ChartsUiState, vm: ChartsViewModel, container: A
             when {
                 state.loading && state.points.isEmpty() -> CircularProgressIndicator(color = TickerColors.Accent)
                 state.error -> Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("No chart data for this pair right now", color = TickerColors.Dim, style = MaterialTheme.typography.bodySmall)
-                    NeonPillButton("RETRY", vm::onRetry, icon = TickerIcons.Refresh)
+                    Text(stringResource(R.string.charts_no_data), color = TickerColors.Dim, style = MaterialTheme.typography.bodySmall)
+                    NeonPillButton(stringResource(R.string.common_retry), vm::onRetry, icon = TickerIcons.Refresh)
                 }
                 else -> PriceChart(
                     points = state.points,
@@ -154,16 +163,16 @@ private fun ChartsScreen(state: ChartsUiState, vm: ChartsViewModel, container: A
             }
         }
         if (hint) {
-            Text("Daily data only for this pair", Modifier.padding(horizontal = 20.dp), color = TickerColors.Warning,
+            Text(stringResource(R.string.charts_daily_only), Modifier.padding(horizontal = 20.dp), color = TickerColors.Warning,
                 style = MaterialTheme.typography.labelSmall)
         }
         Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            StatTile("HIGH", state.high, Modifier.weight(1f))
-            StatTile("LOW", state.low, Modifier.weight(1f))
-            StatTile("AVG", state.avg, Modifier.weight(1f))
+            StatTile(stringResource(R.string.charts_high), state.high, Modifier.weight(1f))
+            StatTile(stringResource(R.string.charts_low), state.low, Modifier.weight(1f))
+            StatTile(stringResource(R.string.charts_avg), state.avg, Modifier.weight(1f))
         }
         if (state.saved.isNotEmpty()) {
-            Text("SAVED PAIRS · ${state.range.label}", Modifier.padding(start = 20.dp, top = 14.dp, bottom = 6.dp),
+            Text(stringResource(R.string.charts_saved_pairs, state.range.label), Modifier.padding(start = 20.dp, top = 14.dp, bottom = 6.dp),
                 color = TickerColors.Dim, style = MaterialTheme.typography.labelSmall, letterSpacing = 1.5.sp)
             Column(Modifier.padding(horizontal = 14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 state.saved.forEach { row ->
@@ -198,7 +207,7 @@ private fun ChartsScreen(state: ChartsUiState, vm: ChartsViewModel, container: A
 @Composable
 private fun PairChip(c: Currency, onClick: () -> Unit) {
     Row(
-        Modifier.height(44.dp).tile(shape = RoundedCornerShape(12.dp)).clickable(onClickLabel = "Choose currency", onClick = onClick)
+        Modifier.height(44.dp).tile(shape = RoundedCornerShape(12.dp)).clickable(onClickLabel = stringResource(R.string.charts_choose_currency), onClick = onClick)
             .padding(start = 8.dp, end = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

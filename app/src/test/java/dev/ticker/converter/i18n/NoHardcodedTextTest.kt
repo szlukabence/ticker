@@ -8,20 +8,23 @@ import java.io.File
 class NoHardcodedTextTest {
     private val patterns = listOf(
         Regex("""Text\(\s*"[\p{L}]"""),
-        Regex("""(contentDescription|label|title|placeholder)\s*=\s*"[\p{L}]"""),
+        Regex("""(contentDescription|label|title|placeholder|onClickLabel|onLongClickLabel|stateDescription)\s*=\s*"[\p{L}]"""),
+        Regex("""(NeonPillButton|StatTile|Heading|SectionHeader|Body|Message)\(\s*"[\p{L}]"""),
+        Regex("""(Icon|CodeChip)\([^\n]*,\s*"[\p{L}]"""),
+        Regex("""Text\(\s*if\s*\([^"]*\)\s*"[\p{L}]"""),
         Regex("""NeonIconButton\([^,]+,\s*"[\p{L}]"""),
     )
 
     @Test fun noLiteralTextInUi() {
         val hits = mutableListOf<String>()
         File("src/main/java").walkTopDown().filter { it.isFile && it.extension == "kt" }.forEach { f ->
-            f.readLines().forEachIndexed { i, raw ->
+            // Comments and animation labels are not shown to the user; blank them out but keep the line count.
+            val text = f.readLines().joinToString("\n") { raw ->
                 val line = raw.substringBefore("//")
-                if ("AsState(" in line) return@forEachIndexed // animation labels
-                if (line.contains("\"TICKER\"")) return@forEachIndexed
-                if (patterns.any { it.containsMatchIn(line) }) hits += "${f.path}:${i + 1}"
+                if ("AsState(" in line || line.contains("\"TICKER\"")) "" else line
             }
+            for (p in patterns) for (m in p.findAll(text)) hits += "${f.path}:${text.substring(0, m.range.first).count { it == '\n' } + 1}"
         }
-        assertTrue("${hits.size} hardcoded strings:\n" + hits.joinToString("\n"), hits.isEmpty())
+        assertTrue("${hits.size} hardcoded strings:\n" + hits.sorted().joinToString("\n"), hits.isEmpty())
     }
 }

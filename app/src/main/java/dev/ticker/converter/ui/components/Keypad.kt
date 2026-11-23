@@ -1,5 +1,7 @@
 package dev.ticker.converter.ui.components
 
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -83,7 +85,7 @@ fun Keypad(decimalLabel: Char, onKey: (Key) -> Unit, modifier: Modifier = Modifi
                             Style.EQ -> TickerColors.OnAccent
                         }
                         if (key == Key.Backspace) {
-                            Icon(TickerIcons.Backspace, contentDescription = "Backspace (hold to clear)", tint = color)
+                            Icon(TickerIcons.Backspace, contentDescription = stringResource(R.string.keypad_backspace), tint = color)
                         } else {
                             Text(
                                 label,

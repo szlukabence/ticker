@@ -29,7 +29,7 @@
         <activity
             android:name=".ui.selection.SelectionConvertActivity"
             android:exported="true"
-            android:label="Convert"
+            android:label="@string/selection_label"
             android:theme="@style/Theme.Ticker.Selection"
             android:excludeFromRecents="true"
             android:taskAffinity="">
@@ -42,7 +42,7 @@
         <receiver
             android:name=".widget.TickerWidgetReceiver"
             android:exported="true"
-            android:label="Ticker rates">
+            android:label="@string/widget_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

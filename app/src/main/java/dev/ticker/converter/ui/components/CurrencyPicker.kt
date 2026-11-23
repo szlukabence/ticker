@@ -1,5 +1,7 @@
 package dev.ticker.converter.ui.components
 
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -59,7 +61,7 @@ fun CurrencyPicker(catalog: CurrencyCatalog, exclude: Set<String>, onPick: (Stri
                 OutlinedTextField(
                     value = query,
                     onValueChange = { query = it },
-                    placeholder = { Text("Search code or name", color = TickerColors.Dim) },
+                    placeholder = { Text(stringResource(R.string.picker_search_hint), color = TickerColors.Dim) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
                     shape = Neon.TileShape,
@@ -69,15 +71,15 @@ fun CurrencyPicker(catalog: CurrencyCatalog, exclude: Set<String>, onPick: (Stri
                     ),
                     modifier = Modifier.weight(1f).focusRequester(focus),
                 )
-                NeonIconButton(TickerIcons.Close, "Close", onDismiss, tint = TickerColors.Text)
+                NeonIconButton(TickerIcons.Close, stringResource(R.string.common_close), onDismiss, tint = TickerColors.Text)
             }
             LazyColumn(Modifier.fillMaxSize()) {
-                if (fiat.isNotEmpty()) item { SectionHeader("FIAT") }
+                if (fiat.isNotEmpty()) item { SectionHeader(stringResource(R.string.picker_fiat)) }
                 items(fiat, key = { "f" + it.code }) { c -> PickRow(c) { onPick(c.code) } }
-                if (crypto.isNotEmpty()) item { SectionHeader("CRYPTO") }
+                if (crypto.isNotEmpty()) item { SectionHeader(stringResource(R.string.picker_crypto)) }
                 items(crypto, key = { "c" + it.code }) { c -> PickRow(c) { onPick(c.code) } }
                 if (results.isEmpty()) item {
-                    Text("No currency matches \"$query\"", Modifier.padding(16.dp), color = TickerColors.Dim)
+                    Text(stringResource(R.string.picker_no_match, query), Modifier.padding(16.dp), color = TickerColors.Dim)
                 }
             }
         }

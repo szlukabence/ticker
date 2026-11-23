@@ -1,5 +1,8 @@
 package dev.ticker.converter.ui.components
 
+import dev.ticker.converter.ui.text.resolve
+import dev.ticker.converter.ui.text.UiText
+import dev.ticker.converter.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -29,19 +32,19 @@ import java.time.format.DateTimeFormatter
 private val TIME = DateTimeFormatter.ofPattern("HH:mm:ss")
 
 /** Exact badge copy from the spec. */
-fun syncBadgeText(status: SyncStatus, now: Instant, zone: ZoneId): String = when (status) {
-    is SyncStatus.Live -> "SYNCED ${TIME.format(status.at.atZone(zone))}"
-    is SyncStatus.Partial -> "PARTIAL · SYNC ${TIME.format(status.at.atZone(zone))}"
-    is SyncStatus.Offline -> "OFFLINE · last sync ${relative(Duration.between(status.lastSync, now))}"
-    SyncStatus.NoData -> "NO DATA"
-    SyncStatus.Syncing -> "SYNCING…"
+fun syncBadgeText(status: SyncStatus, now: Instant, zone: ZoneId): UiText = when (status) {
+    is SyncStatus.Live -> UiText.Res(R.string.sync_live, listOf(TIME.format(status.at.atZone(zone))))
+    is SyncStatus.Partial -> UiText.Res(R.string.sync_partial, listOf(TIME.format(status.at.atZone(zone))))
+    is SyncStatus.Offline -> UiText.Res(R.string.sync_offline, listOf(relative(Duration.between(status.lastSync, now))))
+    SyncStatus.NoData -> UiText.Res(R.string.sync_no_data)
+    SyncStatus.Syncing -> UiText.Res(R.string.sync_syncing)
 }
 
-private fun relative(d: Duration): String = when {
-    d.toMinutes() < 1 -> "just now"
-    d.toHours() < 1 -> "${d.toMinutes()}m ago"
-    d.toDays() < 1 -> "${d.toHours()}h ago"
-    else -> "${d.toDays()}d ago"
+private fun relative(d: Duration): UiText = when {
+    d.toMinutes() < 1 -> UiText.Res(R.string.sync_just_now)
+    d.toHours() < 1 -> UiText.Plural(R.plurals.sync_minutes_ago, d.toMinutes().toInt())
+    d.toDays() < 1 -> UiText.Plural(R.plurals.sync_hours_ago, d.toHours().toInt())
+    else -> UiText.Plural(R.plurals.sync_days_ago, d.toDays().toInt())
 }
 
 @Composable
@@ -57,6 +60,6 @@ fun SyncBadge(status: SyncStatus, modifier: Modifier = Modifier) {
     }
     Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         Box(Modifier.glow(color, alpha = 0.8f, blur = 6.dp, corner = 4.dp).size(7.dp).background(color, CircleShape))
-        Text(syncBadgeText(status, now, ZoneId.systemDefault()), style = MaterialTheme.typography.labelMedium, color = color)
+        Text(syncBadgeText(status, now, ZoneId.systemDefault()).resolve(), style = MaterialTheme.typography.labelMedium, color = color)
     }
 }

@@ -1,5 +1,8 @@
 package dev.ticker.converter.ui.components
 
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,10 +30,10 @@ import dev.ticker.converter.ui.theme.TickerColors
 import dev.ticker.converter.ui.theme.TickerIcons
 import dev.ticker.converter.ui.theme.glow
 
-enum class Tab(val route: String, val label: String, val icon: ImageVector) {
-    CONVERT("convert", "Convert", TickerIcons.Convert),
-    CHARTS("charts", "Charts", TickerIcons.Charts),
-    CAMERA("camera", "Camera", TickerIcons.Camera);
+enum class Tab(val route: String, @StringRes val label: Int, val icon: ImageVector) {
+    CONVERT("convert", R.string.tab_convert, TickerIcons.Convert),
+    CHARTS("charts", R.string.tab_charts, TickerIcons.Charts),
+    CAMERA("camera", R.string.tab_camera, TickerIcons.Camera);
 
     companion object {
         /** The tab a launch intent asks for; anything unknown (or missing) opens Convert. */
@@ -68,7 +71,7 @@ fun BottomBar(current: Tab, onSelect: (Tab) -> Unit) {
                         .size(width = 64.dp, height = 46.dp),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(tab.icon, contentDescription = tab.label, tint = fg)
+                    Icon(tab.icon, contentDescription = stringResource(tab.label), tint = fg)
                 }
             }
         }

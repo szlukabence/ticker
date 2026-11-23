@@ -1,5 +1,7 @@
 package dev.ticker.converter.ui.about
 
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,12 +56,12 @@ fun AboutScreen(onClose: () -> Unit) {
             Column(Modifier.fillMaxSize().dotGrid().safeDrawingPadding()) {
                 val shown = reading
                 Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(if (shown == null) "ABOUT" else "LICENCE", style = MaterialTheme.typography.headlineSmall)
+                    Text(stringResource(if (shown == null) R.string.about_title else R.string.about_licence), style = MaterialTheme.typography.headlineSmall)
                     Spacer(Modifier.weight(1f))
                     if (shown == null) {
-                        NeonIconButton(TickerIcons.Close, "Close", onClose, tint = TickerColors.Text)
+                        NeonIconButton(TickerIcons.Close, stringResource(R.string.common_close), onClose, tint = TickerColors.Text)
                     } else {
-                        NeonIconButton(TickerIcons.Close, "Back to About", { reading = null }, tint = TickerColors.Text)
+                        NeonIconButton(TickerIcons.Close, stringResource(R.string.about_back), { reading = null }, tint = TickerColors.Text)
                     }
                 }
                 if (shown != null) {
@@ -82,38 +84,38 @@ private fun AboutList(open: (String) -> Unit, onLicence: (Component) -> Unit) {
         item {
             Section {
                 Text("TICKER", style = MaterialTheme.typography.headlineSmall.merge(Neon.glowText()), color = TickerColors.Accent)
-                Text("Version ${BuildConfig.VERSION_NAME}", color = TickerColors.Dim, style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.about_version, BuildConfig.VERSION_NAME), color = TickerColors.Dim, style = MaterialTheme.typography.bodyMedium)
                 Body(AboutContent.COPYRIGHT)
-                Body(AboutContent.LEGAL)
+                Body(stringResource(R.string.about_legal))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    NeonPillButton("SOURCE CODE", { open(AboutContent.SOURCE_URL) })
-                    NeonPillButton("LICENCE", { onLicence(AboutContent.components.first()) })
+                    NeonPillButton(stringResource(R.string.about_source_code), { open(AboutContent.SOURCE_URL) })
+                    NeonPillButton(stringResource(R.string.about_licence), { onLicence(AboutContent.components.first()) })
                 }
             }
         }
         item {
             Section {
-                Heading("RATES")
-                Body(AboutContent.DISCLAIMER)
+                Heading(stringResource(R.string.about_rates))
+                Body(stringResource(R.string.about_disclaimer))
                 for (src in AboutContent.dataSources) {
-                    Column(Modifier.fillMaxWidth().clickable(role = Role.Button, onClickLabel = "Open ${src.name}") { open(src.url) }.padding(vertical = 4.dp)) {
+                    Column(Modifier.fillMaxWidth().clickable(role = Role.Button, onClickLabel = stringResource(R.string.about_open_source, src.name)) { open(src.url) }.padding(vertical = 4.dp)) {
                         Text(src.name, color = TickerColors.Accent, style = MaterialTheme.typography.titleSmall)
-                        Body(src.detail)
+                        Body(stringResource(src.detail))
                     }
                 }
             }
         }
         item {
             Section {
-                Heading("PRIVACY")
-                Body(AboutContent.PRIVACY)
-                NeonPillButton("PRIVACY POLICY", { open(AboutContent.PRIVACY_URL) })
+                Heading(stringResource(R.string.about_privacy_title))
+                Body(stringResource(R.string.about_privacy))
+                NeonPillButton(stringResource(R.string.about_privacy_policy), { open(AboutContent.PRIVACY_URL) })
             }
         }
-        item { Heading("OPEN-SOURCE LICENCES", Modifier.padding(start = 6.dp, top = 8.dp)) }
+        item { Heading(stringResource(R.string.about_oss_licences), Modifier.padding(start = 6.dp, top = 8.dp)) }
         items(AboutContent.components.drop(1)) { c ->
             Row(
-                Modifier.fillMaxWidth().tile().clickable(role = Role.Button, onClickLabel = "Show licence") { onLicence(c) }
+                Modifier.fillMaxWidth().tile().clickable(role = Role.Button, onClickLabel = stringResource(R.string.about_show_licence)) { onLicence(c) }
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -131,9 +133,10 @@ private fun AboutList(open: (String) -> Unit, onLicence: (Component) -> Unit) {
 @Composable
 private fun LicenceText(c: Component) {
     val context = LocalContext.current
+    val missing = stringResource(R.string.about_licence_missing, c.licenceAsset)
     val text = remember(c) {
         runCatching { context.assets.open(c.licenceAsset).bufferedReader().use { it.readText() } }
-            .getOrDefault("Licence text missing: ${c.licenceAsset}")
+            .getOrDefault(missing)
     }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 10.dp)) {
         Text(c.name, color = TickerColors.Accent, style = MaterialTheme.typography.titleMedium)

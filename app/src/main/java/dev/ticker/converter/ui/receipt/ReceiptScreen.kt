@@ -1,5 +1,7 @@
 package dev.ticker.converter.ui.receipt
 
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -78,10 +80,10 @@ fun ReceiptScreen(
         CompositionLocalProvider(LocalContentColor provides TickerColors.Text) {
             Column(Modifier.fillMaxSize().dotGrid().safeDrawingPadding()) {
                 Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text("RECEIPT", style = MaterialTheme.typography.headlineSmall)
+                    Text(stringResource(R.string.receipt_title), style = MaterialTheme.typography.headlineSmall)
                     Spacer(Modifier.weight(1f))
-                    NeonPillButton("RETAKE", onRetake, icon = TickerIcons.Camera)
-                    NeonIconButton(TickerIcons.Close, "Close receipt", onClose, tint = TickerColors.Text)
+                    NeonPillButton(stringResource(R.string.receipt_retake), onRetake, icon = TickerIcons.Camera)
+                    NeonIconButton(TickerIcons.Close, stringResource(R.string.receipt_close), onClose, tint = TickerColors.Text)
                 }
                 Row(Modifier.padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                     val shape = RoundedCornerShape(50)
@@ -89,12 +91,12 @@ fun ReceiptScreen(
                         Modifier.height(44.dp).clip(shape).background(Neon.Tile).border(1.dp, Neon.TileBorder, shape),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        CodeChip(state.from?.code.orEmpty(), "Currency on the receipt") { picking = Picking.FROM }
-                        Icon(TickerIcons.Arrow, "to", Modifier.size(18.dp), tint = TickerColors.Accent)
-                        CodeChip(state.to?.code.orEmpty(), "Convert into") { picking = Picking.TO }
+                        CodeChip(state.from?.code.orEmpty(), stringResource(R.string.receipt_chip_from)) { picking = Picking.FROM }
+                        Icon(TickerIcons.Arrow, stringResource(R.string.camera_to), Modifier.size(18.dp), tint = TickerColors.Accent)
+                        CodeChip(state.to?.code.orEmpty(), stringResource(R.string.camera_chip_to)) { picking = Picking.TO }
                     }
                     state.feeLabel?.let {
-                        Text("  incl. $it fee", color = TickerColors.Dim, style = MaterialTheme.typography.labelMedium)
+                        Text("  " + stringResource(R.string.incl_fee, it), color = TickerColors.Dim, style = MaterialTheme.typography.labelMedium)
                     }
                 }
                 when {
@@ -105,7 +107,7 @@ fun ReceiptScreen(
                     ) {
                         CircularProgressIndicator(color = TickerColors.Accent)
                         Spacer(Modifier.height(16.dp))
-                        Text("Reading receipt…", color = TickerColors.Dim, style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.receipt_reading), color = TickerColors.Dim, style = MaterialTheme.typography.bodyMedium)
                     }
                     state.failed -> Column(
                         Modifier.fillMaxSize().padding(32.dp),
@@ -113,13 +115,13 @@ fun ReceiptScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            "Couldn't find any prices. Try a flatter photo with more light.",
+                            stringResource(R.string.receipt_none),
                             color = TickerColors.Text, style = MaterialTheme.typography.bodyMedium,
                         )
                         Spacer(Modifier.height(20.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            NeonPillButton("RETAKE", onRetake, icon = TickerIcons.Camera)
-                            NeonPillButton("FROM GALLERY", onTryAnother, icon = TickerIcons.Gallery)
+                            NeonPillButton(stringResource(R.string.receipt_retake), onRetake, icon = TickerIcons.Camera)
+                            NeonPillButton(stringResource(R.string.receipt_gallery), onTryAnother, icon = TickerIcons.Gallery)
                         }
                     }
                     else -> Content(state, vm, onOpenConvert)
@@ -147,11 +149,12 @@ private fun Content(state: ReceiptUiState, vm: ReceiptViewModel, onOpenConvert: 
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             itemsIndexed(state.rows) { index, row ->
+                val rowState = stringResource(if (row.included) R.string.receipt_included else R.string.receipt_left_out)
                 val strike = if (row.included) TextDecoration.None else TextDecoration.LineThrough
                 Row(
                     Modifier.fillMaxWidth().height(52.dp).tile()
-                        .clickable(role = Role.Checkbox, onClickLabel = if (row.included) "Leave out" else "Include") { vm.onToggle(index) }
-                        .semantics { stateDescription = if (row.included) "Included" else "Left out" }
+                        .clickable(role = Role.Checkbox, onClickLabel = stringResource(if (row.included) R.string.receipt_leave_out else R.string.receipt_include)) { vm.onToggle(index) }
+                        .semantics { stateDescription = rowState }
                         .alpha(if (row.included) 1f else 0.4f)
                         .padding(horizontal = 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -167,11 +170,11 @@ private fun Content(state: ReceiptUiState, vm: ReceiptViewModel, onOpenConvert: 
         }
         Column(
             Modifier.padding(14.dp).fillMaxWidth().tile(active = true)
-                .clickable(onClickLabel = "Open total in Convert") { if (vm.openTotal()) onOpenConvert() }
+                .clickable(onClickLabel = stringResource(R.string.receipt_open_total)) { if (vm.openTotal()) onOpenConvert() }
                 .padding(16.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("TOTAL", style = MaterialTheme.typography.labelSmall, color = TickerColors.Dim, letterSpacing = 1.5.sp)
+                Text(stringResource(R.string.receipt_total), style = MaterialTheme.typography.labelSmall, color = TickerColors.Dim, letterSpacing = 1.5.sp)
                 Spacer(Modifier.weight(1f))
                 Text(state.sumOriginal, style = MaterialTheme.typography.labelMedium, color = TickerColors.Dim)
             }
@@ -183,17 +186,17 @@ private fun Content(state: ReceiptUiState, vm: ReceiptViewModel, onOpenConvert: 
                 maxLines = 1,
             )
             state.printedTotal?.let {
-                Text("Receipt says $it", style = MaterialTheme.typography.labelSmall, color = TickerColors.Dim)
+                Text(stringResource(R.string.receipt_says, it), style = MaterialTheme.typography.labelSmall, color = TickerColors.Dim)
             }
             if (state.mismatch) {
                 Text(
-                    "Some lines may be misread — tap them to leave them out",
+                    stringResource(R.string.receipt_misread),
                     Modifier.padding(top = 4.dp),
                     style = MaterialTheme.typography.labelSmall,
                     color = TickerColors.Warning,
                 )
             }
-            Text("Tap to open in Convert", Modifier.padding(top = 4.dp), style = MaterialTheme.typography.labelSmall, color = Neon.AccentSoft)
+            Text(stringResource(R.string.receipt_tap_open), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.labelSmall, color = Neon.AccentSoft)
         }
     }
 }

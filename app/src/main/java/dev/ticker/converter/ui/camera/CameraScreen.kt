@@ -1,5 +1,7 @@
 package dev.ticker.converter.ui.camera
 
+import dev.ticker.converter.R
+import androidx.compose.ui.res.stringResource
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -148,17 +150,17 @@ private fun PermissionScreen(asked: Boolean, retry: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("CAMERA", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.camera_title), style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(12.dp))
         Text(
-            "Ticker uses the camera to read prices on tags and convert them. Images are processed on your phone and never leave it.",
+            stringResource(R.string.camera_permission_rationale),
             color = TickerColors.Dim, style = MaterialTheme.typography.bodyMedium,
         )
         Spacer(Modifier.height(20.dp))
-        NeonPillButton("ALLOW CAMERA", retry, icon = TickerIcons.Camera)
+        NeonPillButton(stringResource(R.string.camera_allow), retry, icon = TickerIcons.Camera)
         if (asked) {
             Spacer(Modifier.height(10.dp))
-            NeonPillButton("OPEN SETTINGS", {
+            NeonPillButton(stringResource(R.string.camera_open_settings), {
                 context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)))
             })
         }
@@ -298,14 +300,14 @@ private fun CameraScreen(vm: CameraViewModel, container: AppContainer, onOpenCon
                 Modifier.height(44.dp).clip(chipShape).background(Color(0xCC000000)).border(1.dp, Color(0xFF262626), chipShape),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                CodeChip(state.from.code, "Currency on the tag") { picking = Picking.FROM }
-                Icon(TickerIcons.Arrow, contentDescription = "to", tint = TickerColors.Accent, modifier = Modifier.size(18.dp))
-                CodeChip(state.to.code, "Convert into") { picking = Picking.TO }
+                CodeChip(state.from.code, stringResource(R.string.camera_chip_from)) { picking = Picking.FROM }
+                Icon(TickerIcons.Arrow, contentDescription = stringResource(R.string.camera_to), tint = TickerColors.Accent, modifier = Modifier.size(18.dp))
+                CodeChip(state.to.code, stringResource(R.string.camera_chip_to)) { picking = Picking.TO }
             }
-            NeonIconButton(TickerIcons.Convert, "Swap currencies", vm::onSwap, Modifier.padding(start = 6.dp), tint = TickerColors.Text, background = Color(0xCC000000))
+            NeonIconButton(TickerIcons.Convert, stringResource(R.string.camera_swap), vm::onSwap, Modifier.padding(start = 6.dp), tint = TickerColors.Text, background = Color(0xCC000000))
             Spacer(Modifier.weight(1f))
             NeonIconButton(
-                TickerIcons.Torch, if (state.torch) "Turn torch off" else "Turn torch on", vm::onToggleTorch,
+                TickerIcons.Torch, stringResource(if (state.torch) R.string.camera_torch_off else R.string.camera_torch_on), vm::onToggleTorch,
                 tint = if (state.torch) TickerColors.Accent else TickerColors.Text, glowing = state.torch, background = Color(0xCC000000),
             )
         }
@@ -317,22 +319,22 @@ private fun CameraScreen(vm: CameraViewModel, container: AppContainer, onOpenCon
                 Column(
                     Modifier.glow(alpha = 0.3f).clip(Neon.TileShape).background(Color(0xE6061510))
                         .border(1.dp, Neon.ActiveBorder, Neon.TileShape)
-                        .clickable(onClickLabel = "Open in Convert") { if (vm.onResultTapped()) onOpenConvert() }
+                        .clickable(onClickLabel = stringResource(R.string.camera_open_in_convert)) { if (vm.onResultTapped()) onOpenConvert() }
                         .padding(horizontal = 20.dp, vertical = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(state.converted ?: "", color = TickerColors.Accent, fontSize = 28.sp, fontWeight = FontWeight.SemiBold,
                         style = MaterialTheme.typography.bodyLarge.merge(Neon.glowText()))
-                    Text("${state.to.code} · ${state.readingText ?: ""}", color = Color(0xFFAAAAAA), style = MaterialTheme.typography.labelSmall)
-                    state.feeLabel?.let { Text("incl. $it fee", color = TickerColors.Dim, style = MaterialTheme.typography.labelSmall) }
-                    if (state.frozen) Text("LOCKED · shutter reads again", color = TickerColors.Accent, style = MaterialTheme.typography.labelSmall)
+                    Text("${state.to.code} · ${state.readingText.orEmpty()} · ${stringResource(R.string.camera_tap_to_convert)}", color = Color(0xFFAAAAAA), style = MaterialTheme.typography.labelSmall)
+                    state.feeLabel?.let { Text(stringResource(R.string.incl_fee, it), color = TickerColors.Dim, style = MaterialTheme.typography.labelSmall) }
+                    if (state.frozen) Text(stringResource(R.string.camera_locked), color = TickerColors.Accent, style = MaterialTheme.typography.labelSmall)
                 }
             } else {
                 Text(
                     when {
-                        capturing -> "Hold still…"
-                        receiptMode -> "Fit the whole receipt in the frame"
-                        else -> "Point the box at a price"
+                        capturing -> stringResource(R.string.camera_hold_still)
+                        receiptMode -> stringResource(R.string.camera_fit_receipt)
+                        else -> stringResource(R.string.camera_point_price)
                     },
                     Modifier.background(Color(0xCC000000), RoundedCornerShape(50)).border(1.dp, Color(0xFF262626), RoundedCornerShape(50))
                         .padding(horizontal = 14.dp, vertical = 8.dp),
@@ -353,7 +355,7 @@ private fun CameraScreen(vm: CameraViewModel, container: AppContainer, onOpenCon
                 horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically,
             ) {
                 NeonIconButton(
-                    TickerIcons.Gallery, "Open a receipt photo", pickPhoto,
+                    TickerIcons.Gallery, stringResource(R.string.camera_open_gallery), pickPhoto,
                     tint = TickerColors.Text, size = 48.dp, background = Color(0xCC000000),
                 )
                 Shutter(
@@ -418,11 +420,11 @@ private fun ModeSwitch(mode: CameraMode, onSet: (CameraMode) -> Unit) {
         CameraMode.entries.forEach { m ->
             val active = m == mode
             Text(
-                if (m == CameraMode.PRICE) "PRICE" else "RECEIPT",
+                stringResource(if (m == CameraMode.PRICE) R.string.camera_mode_price else R.string.camera_mode_receipt),
                 Modifier.clip(shape)
                     .then(if (active) Modifier.background(Color(0xFF0E2A1E)).border(1.dp, Neon.ActiveBorder, shape) else Modifier)
                     .semantics { selected = active }
-                    .clickable(role = Role.Tab, onClickLabel = if (m == CameraMode.PRICE) "Read one price" else "Photograph a receipt") { onSet(m) }
+                    .clickable(role = Role.Tab, onClickLabel = stringResource(if (m == CameraMode.PRICE) R.string.camera_read_one else R.string.camera_photograph_receipt)) { onSet(m) }
                     .padding(horizontal = 16.dp, vertical = 7.dp),
                 color = if (active) TickerColors.Accent else TickerColors.Dim,
                 style = MaterialTheme.typography.labelMedium.let { if (active) it.merge(Neon.glowText()) else it },
@@ -440,9 +442,9 @@ private fun ModeSwitch(mode: CameraMode, onSet: (CameraMode) -> Unit) {
 @Composable
 private fun Shutter(mode: CameraMode, locked: Boolean, ready: Boolean, busy: Boolean, onClick: () -> Unit) {
     val label = when {
-        mode == CameraMode.RECEIPT -> "Take receipt photo"
-        locked -> "Read another price"
-        else -> "Lock this price"
+        mode == CameraMode.RECEIPT -> stringResource(R.string.camera_shutter_receipt)
+        locked -> stringResource(R.string.camera_shutter_again)
+        else -> stringResource(R.string.camera_shutter_lock)
     }
     Box(
         Modifier.glow(alpha = 0.4f, blur = 16.dp, corner = 36.dp).size(72.dp).clip(CircleShape).background(Color(0xCC000000))

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- app -->
     <string name="widget_description">Your favourite rates</string>
+    <string name="selection_label">Convert</string>
+    <string name="widget_label">Ticker rates</string>
     <string name="shortcut_scan_short">Scan price</string>
     <string name="shortcut_scan_long">Scan a price with the camera</string>
     <string name="shortcut_charts_short">Charts</string>
@@ -9,4 +12,158 @@
     <string name="tab_convert">Convert</string>
     <string name="tab_charts">Charts</string>
     <string name="tab_camera">Camera</string>
+
+    <!-- common -->
+    <string name="common_close">Close</string>
+    <string name="common_retry">RETRY</string>
+    <string name="common_on">On</string>
+    <string name="common_off">Off</string>
+    <string name="common_selected">Selected</string>
+    <string name="incl_fee">incl. %1$s fee</string>
+
+    <!-- keypad -->
+    <string name="keypad_backspace">Backspace (hold to clear)</string>
+
+    <!-- picker -->
+    <string name="picker_search_hint">Search code or name</string>
+    <string name="picker_fiat">FIAT</string>
+    <string name="picker_crypto">CRYPTO</string>
+    <string name="picker_no_match">No currency matches \"%1$s\"</string>
+
+    <!-- sync -->
+    <string name="sync_live">SYNCED %1$s</string>
+    <string name="sync_partial">PARTIAL · SYNC %1$s</string>
+    <string name="sync_offline">OFFLINE · last sync %1$s</string>
+    <string name="sync_no_data">NO DATA</string>
+    <string name="sync_syncing">SYNCING…</string>
+    <string name="sync_just_now">just now</string>
+
+    <!-- fee -->
+    <string name="fee_set">Set fee</string>
+    <string name="fee_card_desc">Card fee %1$s</string>
+    <string name="fee_chip_on">FEE +%1$s</string>
+    <string name="fee_chip_off">FEE</string>
+    <string name="fee_sheet_title">CARD FEE</string>
+    <string name="fee_sheet_hint">Added to converted amounts, like your bank\'s markup</string>
+    <string name="fee_lower">Lower fee</string>
+    <string name="fee_raise">Raise fee</string>
+
+    <!-- theme -->
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_button">Theme: %1$s</string>
+
+    <!-- rows -->
+    <string name="row_drag">Drag to reorder %1$s</string>
+    <string name="row_remove">Remove %1$s</string>
+
+    <!-- convert -->
+    <string name="convert_title">CONVERT</string>
+    <string name="convert_done">DONE</string>
+    <string name="convert_edit">Edit favourites</string>
+    <string name="convert_refresh">Refresh rates</string>
+    <string name="convert_about">About Ticker</string>
+    <string name="convert_add">Add currency</string>
+    <string name="convert_no_internet">Connect to the internet to load rates</string>
+
+    <!-- widget -->
+    <string name="widget_open_ticker">Open Ticker to load rates</string>
+    <string name="widget_add_favourites">Add favourites in Ticker</string>
+
+    <!-- charts -->
+    <string name="charts_title">CHARTS</string>
+    <string name="charts_unsave">Remove from saved pairs</string>
+    <string name="charts_save">Save pair</string>
+    <string name="charts_swap">Swap pair</string>
+    <string name="charts_stale">Couldn\'t refresh · showing saved data</string>
+    <string name="charts_no_data">No chart data for this pair right now</string>
+    <string name="charts_daily_only">Daily data only for this pair</string>
+    <string name="charts_high">HIGH</string>
+    <string name="charts_low">LOW</string>
+    <string name="charts_avg">AVG</string>
+    <string name="charts_saved_pairs">SAVED PAIRS · %1$s</string>
+    <string name="charts_choose_currency">Choose currency</string>
+
+    <!-- selection -->
+    <string name="selection_change">Change currency</string>
+    <string name="selection_no_amount">No amount in the selected text</string>
+    <string name="selection_open">OPEN IN TICKER</string>
+
+    <!-- about -->
+    <string name="about_title">ABOUT</string>
+    <string name="about_licence">LICENCE</string>
+    <string name="about_back">Back to About</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_source_code">SOURCE CODE</string>
+    <string name="about_rates">RATES</string>
+    <string name="about_open_source">Open %1$s</string>
+    <string name="about_privacy_title">PRIVACY</string>
+    <string name="about_privacy_policy">PRIVACY POLICY</string>
+    <string name="about_oss_licences">OPEN-SOURCE LICENCES</string>
+    <string name="about_show_licence">Show licence</string>
+    <string name="about_licence_missing">Licence text missing: %1$s</string>
+    <string name="about_legal">Ticker is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. Ticker comes with ABSOLUTELY NO WARRANTY; see the licence below for details.</string>
+    <string name="about_disclaimer">Rates are reference rates, shown for information only. They are not the rates a bank, card or exchange will give you, and they can be out of date or wrong. The card fee is an estimate. Nothing in Ticker is financial advice; check the real rate before you pay.</string>
+    <string name="about_privacy">No account, ads, analytics or tracking. Camera images are read on the phone and never stored or sent. The app only downloads public exchange rates; those servers see your IP address.</string>
+    <string name="about_source_ecb_detail">Euro foreign exchange reference rates (source: ECB), fetched through Frankfurter. Cross rates, daily changes and charts are Ticker\'s own calculations from these rates, not ECB figures.</string>
+    <string name="about_source_fawaz_detail">Other currencies and all crypto prices, updated once a day. Public domain (CC0).</string>
+
+    <!-- camera -->
+    <string name="camera_title">CAMERA</string>
+    <string name="camera_permission_rationale">Ticker uses the camera to read prices on tags and convert them. Images are processed on your phone and never leave it.</string>
+    <string name="camera_allow">ALLOW CAMERA</string>
+    <string name="camera_open_settings">OPEN SETTINGS</string>
+    <string name="camera_to">to</string>
+    <string name="camera_chip_from">Currency on the tag</string>
+    <string name="camera_chip_to">Convert into</string>
+    <string name="camera_swap">Swap currencies</string>
+    <string name="camera_torch_off">Turn torch off</string>
+    <string name="camera_torch_on">Turn torch on</string>
+    <string name="camera_open_in_convert">Open in Convert</string>
+    <string name="camera_tap_to_convert">tap to open in Convert</string>
+    <string name="camera_locked">LOCKED · shutter reads again</string>
+    <string name="camera_hold_still">Hold still…</string>
+    <string name="camera_fit_receipt">Fit the whole receipt in the frame</string>
+    <string name="camera_point_price">Point the box at a price</string>
+    <string name="camera_open_gallery">Open a receipt photo</string>
+    <string name="camera_mode_price">PRICE</string>
+    <string name="camera_mode_receipt">RECEIPT</string>
+    <string name="camera_read_one">Read one price</string>
+    <string name="camera_photograph_receipt">Photograph a receipt</string>
+    <string name="camera_shutter_receipt">Take receipt photo</string>
+    <string name="camera_shutter_again">Read another price</string>
+    <string name="camera_shutter_lock">Lock this price</string>
+
+    <!-- receipt -->
+    <string name="receipt_title">RECEIPT</string>
+    <string name="receipt_retake">RETAKE</string>
+    <string name="receipt_close">Close receipt</string>
+    <string name="receipt_chip_from">Currency on the receipt</string>
+    <string name="receipt_reading">Reading receipt…</string>
+    <string name="receipt_none">Couldn\'t find any prices. Try a flatter photo with more light.</string>
+    <string name="receipt_gallery">FROM GALLERY</string>
+    <string name="receipt_leave_out">Leave out</string>
+    <string name="receipt_include">Include</string>
+    <string name="receipt_included">Included</string>
+    <string name="receipt_left_out">Left out</string>
+    <string name="receipt_open_total">Open total in Convert</string>
+    <string name="receipt_total">TOTAL</string>
+    <string name="receipt_says">Receipt says %1$s</string>
+    <string name="receipt_misread">Some lines may be misread — tap them to leave them out</string>
+    <string name="receipt_tap_open">Tap to open in Convert</string>
+
+    <!-- relative times -->
+    <plurals name="sync_minutes_ago">
+        <item quantity="one">%dm ago</item>
+        <item quantity="other">%dm ago</item>
+    </plurals>
+    <plurals name="sync_hours_ago">
+        <item quantity="one">%dh ago</item>
+        <item quantity="other">%dh ago</item>
+    </plurals>
+    <plurals name="sync_days_ago">
+        <item quantity="one">%dd ago</item>
+        <item quantity="other">%dd ago</item>
+    </plurals>
 </resources>
