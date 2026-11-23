@@ -37,6 +37,7 @@ class AppContainer(app: Application) {
     val settings: SettingsRepository = DataStoreSettingsRepository(app)
     val rates = RatesRepository(ecb, fawaz, RoomSnapshotStore(db.snapshotDao()), catalog, clock)
     val history = HistoryRepository(ecb, fawaz, RoomHistoryStore(db.historyDao()), catalog, clock)
+    init { dev.ticker.converter.core.SystemLocale.init(app) }
     val formatter: AmountFormatter = AmountFormatter.forLocale(systemLocale())
     val decimalSeparator: Char = java.text.DecimalFormatSymbols.getInstance(systemLocale()).decimalSeparator
     val handoff = HandoffQueue()
