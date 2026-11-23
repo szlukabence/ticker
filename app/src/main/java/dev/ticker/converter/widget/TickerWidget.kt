@@ -88,7 +88,7 @@ class TickerWidget : GlanceAppWidget() {
                         Spacer(GlanceModifier.defaultWeight())
                         Text(ui.updated, style = TextStyle(color = if (ui.stale) warning else dim, fontSize = 11.sp, fontFamily = FontFamily.Monospace))
                     }
-                    ui.feeLabel?.let { Text(context.getString(R.string.incl_fee, it), style = TextStyle(color = dim, fontSize = 10.sp, fontFamily = FontFamily.Monospace)) }
+                    ui.feeLabel?.let { Text(context.getString(R.string.incl_fee, it), style = TextStyle(color = dim, fontSize = 10.sp, fontFamily = FontFamily.Monospace), maxLines = 1) }
                     Spacer(GlanceModifier.height(4.dp))
                     ui.rows.take(maxRows).forEach { row ->
                         Row(GlanceModifier.fillMaxWidth().padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {

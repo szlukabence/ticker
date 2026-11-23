@@ -1,5 +1,6 @@
 package dev.ticker.converter.ui.convert
 
+import dev.ticker.converter.core.systemLocale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.ticker.converter.CameraHandoff
@@ -69,7 +70,7 @@ class ConvertViewModel(
             mutate { s ->
                 when {
                     !s.initialized || s.favorites.isEmpty() -> {
-                        val defaults = catalog.defaultFavorites(Locale.getDefault())
+                        val defaults = catalog.defaultFavorites(systemLocale())
                         s.copy(favorites = defaults, activeCode = defaults.first(), initialized = true)
                     }
                     s.activeCode !in s.favorites -> s.copy(activeCode = s.favorites.first())

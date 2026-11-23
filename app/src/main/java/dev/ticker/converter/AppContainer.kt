@@ -1,5 +1,6 @@
 package dev.ticker.converter
 
+import dev.ticker.converter.core.systemLocale
 import android.app.Application
 import dev.ticker.converter.core.math.AmountFormatter
 import dev.ticker.converter.data.catalog.CurrencyCatalog
@@ -36,7 +37,7 @@ class AppContainer(app: Application) {
     val settings: SettingsRepository = DataStoreSettingsRepository(app)
     val rates = RatesRepository(ecb, fawaz, RoomSnapshotStore(db.snapshotDao()), catalog, clock)
     val history = HistoryRepository(ecb, fawaz, RoomHistoryStore(db.historyDao()), catalog, clock)
-    val formatter: AmountFormatter = AmountFormatter.forLocale(Locale.getDefault())
-    val decimalSeparator: Char = java.text.DecimalFormatSymbols.getInstance(Locale.getDefault()).decimalSeparator
+    val formatter: AmountFormatter = AmountFormatter.forLocale(systemLocale())
+    val decimalSeparator: Char = java.text.DecimalFormatSymbols.getInstance(systemLocale()).decimalSeparator
     val handoff = HandoffQueue()
 }

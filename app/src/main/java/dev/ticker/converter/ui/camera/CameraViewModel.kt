@@ -1,5 +1,6 @@
 package dev.ticker.converter.ui.camera
 
+import dev.ticker.converter.core.systemLocale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.ticker.converter.CameraHandoff
@@ -69,7 +70,7 @@ class CameraViewModel(
     init {
         viewModelScope.launch {
             val s = settings.settings.first()
-            val localFiat = catalog.defaultFavorites(Locale.getDefault()).firstOrNull()?.takeIf(catalog::isFiat)
+            val localFiat = catalog.defaultFavorites(systemLocale()).firstOrNull()?.takeIf(catalog::isFiat)
             val from = listOfNotNull(s.cameraFrom, localFiat, "USD").firstNotNullOf(catalog::get)
             val to = (listOfNotNull(s.cameraTo) + s.favorites + listOf("EUR", "USD")).filter { it != from.code }.firstNotNullOf(catalog::get)
             inner.value = Inner(from, to, mode = s.cameraMode)
