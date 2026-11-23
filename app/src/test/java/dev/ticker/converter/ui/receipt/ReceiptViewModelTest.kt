@@ -10,6 +10,12 @@ import dev.ticker.converter.data.repo.RatesRepository
 import dev.ticker.converter.fakes.FakeEcb
 import dev.ticker.converter.fakes.FakeFawaz
 import dev.ticker.converter.fakes.FakeSettingsRepository
+import dev.ticker.converter.fakes.FakeTripsStore
+import dev.ticker.converter.trips.EntrySource
+import dev.ticker.converter.core.model.Payment
+import dev.ticker.converter.ui.trips.TripChipUi
+import dev.ticker.converter.trips.TripsRepository
+import dev.ticker.converter.ui.trips.SavedNote
 import dev.ticker.converter.fakes.InMemorySnapshotStore
 import dev.ticker.converter.fakes.MutableClock
 import dev.ticker.converter.fakes.testCatalog
@@ -33,12 +39,16 @@ class ReceiptViewModelTest {
     private val queue = HandoffQueue()
     private val eur = catalog.get("EUR")!!
 
+    private val tripStore = FakeTripsStore()
+    private val clock = MutableClock(Fixtures.T0)
+    private val tripRepo = TripsRepository(tripStore, clock) { "id1" }
+
     private suspend fun TestScope.vm(feeOn: Boolean = false): ReceiptViewModel {
         val rates = RatesRepository(FakeEcb(), FakeFawaz(), InMemorySnapshotStore(Fixtures.snapshot), catalog,
             MutableClock(Fixtures.T0), main.dispatcher)
         rates.loadCached()
         val settings = FakeSettingsRepository(Settings(favorites = listOf("EUR", "HUF"), initialized = true, feeOn = feeOn, feeBps = 200))
-        val vm = ReceiptViewModel(rates, settings, catalog, formatter, queue, from = "HUF", to = "EUR")
+        val vm = ReceiptViewModel(rates, settings, catalog, formatter, queue, from = "HUF", to = "EUR", trips = tripRepo, clock = clock)
         backgroundScope.launch { vm.state.collect {} }
         testScheduler.advanceUntilIdle()
         return vm
@@ -128,5 +138,58 @@ class ReceiptViewModelTest {
         assertTrue(s.rows.isEmpty())
         assertEquals("USD", s.to?.code)
         assertFalse(vm.openTotal())
+    }
+
+    // ---- trips ----
+
+    private suspend fun startTrip() = (tripRepo.start("Wien", "EUR", null) as TripsRepository.StartResult.Started).trip
+
+    @Test fun receiptAddSavesIncludedSum() = runTest {
+        val vm = vm(); vm.onLines(lines); startTrip(); testScheduler.runCurrent()
+        vm.onToggle(1); testScheduler.runCurrent()
+        vm.onAddToTrip(); testScheduler.runCurrent()
+        val e = tripStore.allEntries().single()
+        assertEquals(0, BigDecimal(1000).compareTo(e.amount))
+        assertEquals("HUF", e.code)
+        assertEquals("Wien", vm.state.value.saved?.tripName)
+        assertNull(e.note)
+    }
+
+    @Test fun receiptAddSourceIsReceipt() = runTest {
+        val vm = vm(); vm.onLines(lines); startTrip(); testScheduler.runCurrent()
+        vm.onAddToTrip(); testScheduler.runCurrent()
+        val e = tripStore.allEntries().single()
+        assertEquals(EntrySource.RECEIPT, e.source)
+        assertEquals(0, BigDecimal(1500).compareTo(e.amount))
+        assertEquals(Payment.CARD, e.payment)
+    }
+
+    @Test fun receiptNoTripNoButton() = runTest {
+        val vm = vm(); vm.onLines(lines); testScheduler.runCurrent()
+        assertNull(vm.state.value.trip)
+        vm.onAddToTrip(); testScheduler.runCurrent()
+        assertTrue(tripStore.allEntries().isEmpty())
+    }
+
+    @Test fun receiptShowsChipWhenTripActive() = runTest {
+        val vm = vm(); vm.onLines(lines); val t = startTrip(); testScheduler.runCurrent()
+        assertEquals(TripChipUi(t.id, "Wien"), vm.state.value.trip)
+        assertNull(vm.state.value.addBlocked)
+    }
+
+    @Test fun receiptUndo() = runTest {
+        val vm = vm(); vm.onLines(lines); startTrip(); testScheduler.runCurrent()
+        vm.onAddToTrip(); testScheduler.runCurrent()
+        vm.onUndoAdd(); testScheduler.runCurrent()
+        assertTrue(tripStore.allEntries().isEmpty())
+        assertNull(vm.state.value.saved)
+    }
+
+    @Test fun receiptSavedClearsAfter4s() = runTest {
+        val vm = vm(); vm.onLines(lines); startTrip(); testScheduler.runCurrent()
+        vm.onAddToTrip(); testScheduler.runCurrent()
+        assertTrue(vm.state.value.saved != null)
+        testScheduler.advanceTimeBy(4_100); testScheduler.runCurrent()
+        assertNull(vm.state.value.saved)
     }
 }

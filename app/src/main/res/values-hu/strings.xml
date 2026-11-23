@@ -160,4 +160,5 @@
     <string name="trip_home_locked">A pénznem nem módosítható, ha már vannak tételek</string>
     <string name="trip_conflict">A(z) %1$s még tart.</string>
     <string name="trip_end_and_start">%1$s lezárása és indítás</string>
+    <string name="trip_add_to_trip">Hozzáadás az utazáshoz</string>
 </resources>

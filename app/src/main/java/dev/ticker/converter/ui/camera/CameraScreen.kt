@@ -201,7 +201,7 @@ private fun CameraScreen(vm: CameraViewModel, container: AppContainer, onOpenCon
     }
     // One view model for every receipt; start() resets it, so a new receipt never shows the last one.
     val receiptVm: ReceiptViewModel = viewModel(key = "receipt") {
-        ReceiptViewModel(container.rates, container.settings, container.catalog, container.formatter, container.handoff, "USD", "EUR")
+        ReceiptViewModel(container.rates, container.settings, container.catalog, container.formatter, container.handoff, "USD", "EUR", container.trips, container.clock)
     }
     // Live reading pauses while a receipt is open (both use the one OCR thread) and in RECEIPT mode.
     androidx.compose.runtime.SideEffect { frozenRef.set(state.frozen || receipt != null || state.mode == CameraMode.RECEIPT) }

@@ -191,4 +191,5 @@
     <string name="trip_home_locked">The currency can\'t change once a trip has entries</string>
     <string name="trip_conflict">%1$s is still running.</string>
     <string name="trip_end_and_start">End %1$s and start</string>
+    <string name="trip_add_to_trip">Add to trip</string>
 </resources>

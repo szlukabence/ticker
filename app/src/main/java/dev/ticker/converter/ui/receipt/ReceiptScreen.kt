@@ -59,6 +59,7 @@ import dev.ticker.converter.ui.theme.TickerColors
 import dev.ticker.converter.ui.theme.TickerIcons
 import dev.ticker.converter.ui.theme.dotGrid
 import dev.ticker.converter.ui.theme.tile
+import dev.ticker.converter.ui.trips.SavedLine
 
 private enum class Picking { FROM, TO }
 
@@ -168,6 +169,7 @@ private fun Content(state: ReceiptUiState, vm: ReceiptViewModel, onOpenConvert: 
                 }
             }
         }
+        SavedLine(state.saved, vm::onUndoAdd, Modifier.padding(top = 4.dp))
         Column(
             Modifier.padding(14.dp).fillMaxWidth().tile(active = true)
                 .clickable(onClickLabel = stringResource(R.string.receipt_open_total)) { if (vm.openTotal()) onOpenConvert() }
@@ -196,7 +198,15 @@ private fun Content(state: ReceiptUiState, vm: ReceiptViewModel, onOpenConvert: 
                     color = TickerColors.Warning,
                 )
             }
-            Text(stringResource(R.string.receipt_tap_open), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.labelSmall, color = Neon.AccentSoft)
+            Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.receipt_tap_open), Modifier.weight(1f), style = MaterialTheme.typography.labelSmall, color = Neon.AccentSoft)
+                if (state.trip != null) {
+                    NeonPillButton(
+                        stringResource(R.string.trip_add_to_trip), vm::onAddToTrip, icon = TickerIcons.Plus,
+                        enabled = state.addBlocked == null, maxLines = 1, compact = true,
+                    )
+                }
+            }
         }
     }
 }

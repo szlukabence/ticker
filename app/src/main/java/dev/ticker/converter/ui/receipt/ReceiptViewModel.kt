@@ -15,6 +15,18 @@ import dev.ticker.converter.core.model.Settings
 import dev.ticker.converter.data.catalog.CurrencyCatalog
 import dev.ticker.converter.data.local.SettingsRepository
 import dev.ticker.converter.data.repo.RatesRepository
+import dev.ticker.converter.trips.EntryFactory
+import dev.ticker.converter.trips.EntryResult
+import dev.ticker.converter.trips.EntrySource
+import dev.ticker.converter.trips.Reason
+import dev.ticker.converter.trips.Trip
+import dev.ticker.converter.trips.TripsRepository
+import dev.ticker.converter.ui.trips.SavedNote
+import dev.ticker.converter.ui.trips.SavedNoteTimer
+import dev.ticker.converter.ui.trips.TripChipUi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import java.time.Clock
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -35,17 +47,24 @@ data class ReceiptUiState(
     val printedTotal: String? = null,
     val mismatch: Boolean = false,
     val feeLabel: String? = null,
+    /** The active trip; the Add to trip button shows only while there is one. */
+    val trip: TripChipUi? = null,
+    /** Why the total can't be added right now; null means it can. */
+    val addBlocked: Reason? = null,
+    val saved: SavedNote? = null,
 )
 
 /** Receipt screen: every line and the total converted; tap a line to leave it out (extras spec §5). */
 class ReceiptViewModel(
     private val rates: RatesRepository,
-    settings: SettingsRepository,
+    private val settings: SettingsRepository,
     private val catalog: CurrencyCatalog,
     private val formatter: AmountFormatter,
     private val handoff: HandoffQueue,
     from: String,
     to: String,
+    private val trips: TripsRepository,
+    private val clock: Clock,
 ) : ViewModel() {
 
     private data class Inner(
@@ -58,8 +77,12 @@ class ReceiptViewModel(
 
     private val inner = MutableStateFlow(Inner(from, to))
 
-    val state: StateFlow<ReceiptUiState> = combine(inner, rates.snapshot, settings.settings) { i, snap, s -> render(i, snap, s) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, ReceiptUiState())
+    private val timer = SavedNoteTimer(viewModelScope)
+
+    val state: StateFlow<ReceiptUiState> =
+        combine(inner, rates.snapshot, settings.settings, trips.active, timer.note) { i, snap, s, trip, saved ->
+            render(i, snap, s, trip, saved)
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, ReceiptUiState())
 
     /** Begins a new receipt: clears the previous one and takes the Camera's current currencies. */
     fun start(from: String, to: String) { inner.value = Inner(from, to) }
@@ -93,12 +116,35 @@ class ReceiptViewModel(
         return handoff.send(CameraHandoff(i.from, sum))
     }
 
+    /** Saves the included lines' sum, in the receipt's currency, to the active trip, then shows the undo line. */
+    fun onAddToTrip() {
+        viewModelScope.launch {
+            val trip = trips.active.first() ?: return@launch
+            val entry = (entryResult(inner.value, trip, settings.settings.first()) as? EntryResult.Ok)?.entry ?: return@launch
+            trips.add(entry)
+            timer.show(SavedNote(entry.id, trip.name))
+        }
+    }
+
+    /** Deletes exactly the entry the saved line names. */
+    fun onUndoAdd() {
+        val id = timer.note.value?.entryId ?: return
+        timer.clear()
+        viewModelScope.launch { trips.deleteEntry(id) }
+    }
+
+    private fun entryResult(i: Inner, trip: Trip, s: Settings): EntryResult = EntryFactory.fromConversion(
+        amount = includedSum(i) ?: BigDecimal.ZERO, code = i.from, trip = trip,
+        homeDecimals = catalog.get(trip.homeCode)?.decimals ?: 2, snap = rates.snapshot.value,
+        feeOn = s.feeOn, feeBps = s.feeBps, payment = s.lastPayment, source = EntrySource.RECEIPT, now = clock.instant(),
+    )
+
     private fun includedSum(i: Inner): BigDecimal? = i.receipt?.items
         ?.filterIndexed { idx, _ -> idx !in i.excluded }
         ?.fold(BigDecimal.ZERO) { a, b -> a + b.amount }
         ?.takeIf { it.signum() > 0 }
 
-    private fun render(i: Inner, snap: RateSnapshot?, s: Settings): ReceiptUiState {
+    private fun render(i: Inner, snap: RateSnapshot?, s: Settings, trip: Trip?, saved: SavedNote?): ReceiptUiState {
         val from = catalog.get(i.from)
         val to = catalog.get(i.to)
         val r = i.receipt ?: return ReceiptUiState(reading = !i.failed, failed = i.failed, from = from, to = to)
@@ -121,6 +167,9 @@ class ReceiptViewModel(
             printedTotal = r.printedTotal?.let(::orig),
             mismatch = r.printedTotal != null && (all - r.printedTotal).abs() > TOLERANCE,
             feeLabel = if (s.feeOn) Fee.label(s.feeBps) else null,
+            trip = trip?.let { TripChipUi(it.id, it.name) },
+            addBlocked = trip?.let { (entryResult(i, it, s) as? EntryResult.Unavailable)?.reason },
+            saved = saved,
         )
     }
 
