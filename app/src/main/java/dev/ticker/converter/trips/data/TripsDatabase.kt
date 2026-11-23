@@ -73,6 +73,7 @@ fun EntryEntity.toEntry() = Entry(
 abstract class TripDao {
     @Query("SELECT * FROM trip") abstract fun trips(): Flow<List<TripEntity>>
     @Query("SELECT * FROM entry WHERE tripId = :tripId") abstract fun entries(tripId: String): Flow<List<EntryEntity>>
+    @Query("SELECT * FROM entry") abstract fun allEntriesFlow(): Flow<List<EntryEntity>>
     @Query("SELECT * FROM trip") abstract suspend fun allTrips(): List<TripEntity>
     @Query("SELECT * FROM entry") abstract suspend fun allEntries(): List<EntryEntity>
     @Upsert abstract suspend fun upsertTrip(t: TripEntity)

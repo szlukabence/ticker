@@ -235,4 +235,27 @@
     <string name="entry_delete">Delete</string>
     <string name="entry_delete_confirm">Delete this entry?</string>
     <string name="entry_keep">Keep</string>
+    <string name="trips_title">All trips</string>
+    <string name="trips_menu_backup">Back up all trips</string>
+    <string name="trips_menu_restore">Restore from backup</string>
+    <string name="trips_active">Active</string>
+    <string name="trips_empty">No trips yet. Start one from Convert.</string>
+    <string name="trips_delete">Delete</string>
+    <string name="trips_delete_desc">Delete %1$s</string>
+    <string name="trips_delete_title">Delete this trip?</string>
+    <string name="trips_delete_text">%1$s and all its entries will be deleted. This can\'t be undone.</string>
+    <string name="trips_backup_saved">Backup saved</string>
+    <string name="trips_restored">Restored %1$s, %2$s</string>
+    <string name="trips_restore_nothing">Nothing new to restore</string>
+    <string name="trips_restore_error_not_a_backup">That file isn\'t a Ticker trips backup</string>
+    <string name="trips_restore_error_newer_version">That backup comes from a newer version of Ticker</string>
+    <string name="trips_restore_error_corrupt">The backup file is damaged</string>
+    <plurals name="trips_count">
+        <item quantity="one">%d trip</item>
+        <item quantity="other">%d trips</item>
+    </plurals>
+    <plurals name="entries_count">
+        <item quantity="one">%d entry</item>
+        <item quantity="other">%d entries</item>
+    </plurals>
 </resources>

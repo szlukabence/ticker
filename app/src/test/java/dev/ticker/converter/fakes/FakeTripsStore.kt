@@ -13,6 +13,7 @@ class FakeTripsStore : TripsStore {
 
     override fun trips(): Flow<List<Trip>> = tripMap.map { it.values.toList() }
     override fun entries(tripId: String): Flow<List<Entry>> = entryMap.map { m -> m.values.filter { it.tripId == tripId } }
+    override fun allEntriesFlow(): Flow<List<Entry>> = entryMap.map { it.values.toList() }
     override suspend fun allTrips(): List<Trip> = tripMap.value.values.toList()
     override suspend fun allEntries(): List<Entry> = entryMap.value.values.toList()
     override suspend fun upsertTrip(t: Trip) { tripMap.value = tripMap.value + (t.id to t) }

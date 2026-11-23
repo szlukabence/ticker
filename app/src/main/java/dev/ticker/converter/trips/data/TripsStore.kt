@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.map
 interface TripsStore {
     fun trips(): Flow<List<Trip>>
     fun entries(tripId: String): Flow<List<Entry>>
+    /** Every entry of every trip, for totals on the all-trips list. */
+    fun allEntriesFlow(): Flow<List<Entry>>
     suspend fun allTrips(): List<Trip>
     suspend fun allEntries(): List<Entry>
     suspend fun upsertTrip(t: Trip)
@@ -22,6 +24,7 @@ interface TripsStore {
 class RoomTripsStore(private val dao: TripDao) : TripsStore {
     override fun trips() = dao.trips().map { l -> l.map { it.toTrip() } }
     override fun entries(tripId: String) = dao.entries(tripId).map { l -> l.map { it.toEntry() } }
+    override fun allEntriesFlow() = dao.allEntriesFlow().map { l -> l.map { it.toEntry() } }
     override suspend fun allTrips() = dao.allTrips().map { it.toTrip() }
     override suspend fun allEntries() = dao.allEntries().map { it.toEntry() }
     override suspend fun upsertTrip(t: Trip) = dao.upsertTrip(t.toEntity())

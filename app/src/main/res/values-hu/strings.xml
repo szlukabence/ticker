@@ -204,4 +204,27 @@
     <string name="entry_delete">Törlés</string>
     <string name="entry_delete_confirm">Törlöd ezt a tételt?</string>
     <string name="entry_keep">Megtartom</string>
+    <string name="trips_title">Összes utazás</string>
+    <string name="trips_menu_backup">Összes utazás mentése</string>
+    <string name="trips_menu_restore">Visszaállítás mentésből</string>
+    <string name="trips_active">Aktív</string>
+    <string name="trips_empty">Még nincs utazás. Indíts egyet az Átváltásból.</string>
+    <string name="trips_delete">Törlés</string>
+    <string name="trips_delete_desc">%1$s törlése</string>
+    <string name="trips_delete_title">Törlöd ezt az utazást?</string>
+    <string name="trips_delete_text">A(z) %1$s és minden tétele törlődik. Ez nem vonható vissza.</string>
+    <string name="trips_backup_saved">A mentés elkészült</string>
+    <string name="trips_restored">Visszaállítva: %1$s, %2$s</string>
+    <string name="trips_restore_nothing">Nincs mit visszaállítani</string>
+    <string name="trips_restore_error_not_a_backup">Ez a fájl nem a Ticker utazásainak mentése</string>
+    <string name="trips_restore_error_newer_version">Ez a mentés a Ticker egy újabb verziójából származik</string>
+    <string name="trips_restore_error_corrupt">A mentési fájl sérült</string>
+    <plurals name="trips_count">
+        <item quantity="one">%d utazás</item>
+        <item quantity="other">%d utazás</item>
+    </plurals>
+    <plurals name="entries_count">
+        <item quantity="one">%d tétel</item>
+        <item quantity="other">%d tétel</item>
+    </plurals>
 </resources>

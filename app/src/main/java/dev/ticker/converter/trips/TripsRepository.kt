@@ -29,6 +29,8 @@ class TripsRepository(
 
     fun entries(tripId: String): Flow<List<Entry>> = store.entries(tripId)
 
+    val allEntries: Flow<List<Entry>> = store.allEntriesFlow()
+
     suspend fun start(name: String, homeCode: String, budget: BigDecimal?): StartResult {
         val clean = name.trim()
         require(clean.isNotEmpty()) { "Trip name must not be blank" }
